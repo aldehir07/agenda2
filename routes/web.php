@@ -8,10 +8,11 @@ use App\Http\Controllers\UsuarioController;
 
 
 Route::middleware('auth')->group(function(){
-    Route::get('/', [MainController::class, 'index'])->name('home');
+    // Route::get('/', [MainController::class, 'index'])->name('home');
     route::get('calendario', [ReservaCalController::class, 'index'])->name('calendario');
     Route::resource('verRegistro', RegistroReservaController::class);
     Route::resource('reservaCal', ReservaCalController::class);
+    route::get('tabla2', [RegistroReservaController::class, 'index2'])->name('tabla2');
 });
 
 

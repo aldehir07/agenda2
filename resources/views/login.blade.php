@@ -8,16 +8,17 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/login.css')}}">
 
+
 </head>
 <body>
 @include('plantilla.nabvar')
     <div class="login-container">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-6">
+                <div class="col-md-4">
                     <div class="login-card">
                         <div class="login-header">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="mb-4">
+                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4" >
                             <h4>Bienvenido al Sistema</h4>
                             <p class="text-muted">Ingresa tus credenciales para continuar</p>
                         </div>
@@ -28,21 +29,6 @@
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         @endif
-                        {{-- @if (session('status'))
-                            <div class="alert alert-success">
-                                {{ session('status') }}
-                            </div>
-                        @endif --}}
-
-                        {{-- @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul class="mb-0">
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
-                        @endif --}}
 
                         <form method="POST" action="{{route('loginpost')}}">
                             @csrf
@@ -69,14 +55,6 @@
                             <button type="submit" class="btn btn-primary btn-login">
                                 <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión
                             </button>
-
-
-                                {{-- <div class="text-center mt-3">
-                                    <a href="#" class="text-decoration-none">
-                                        ¿Olvidaste tu contraseña?
-                                    </a>
-                                </div> --}}
-
 
                             <div class="divider">
                                 <span>¿No tienes cuenta?</span>

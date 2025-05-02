@@ -13,10 +13,10 @@
     <div class="register-container">
         <div class="container">
             <div class="row justify-content-center">
-                <div class="col-md-8">
+                <div class="col-md-4">
                     <div class="register-card">
                         <div class="register-header">
-                            <img src="{{ asset('images/logo.png') }}" alt="Logo" class="mb-4">
+                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4">
                             <h4>Crear Nueva Cuenta</h4>
                             <p class="text-muted">Completa el formulario para registrarte</p>
                         </div>

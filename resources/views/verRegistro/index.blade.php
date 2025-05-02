@@ -33,7 +33,7 @@
                         <thead class="table-dark">
                             <tr>
                                 <th>ID</th>
-                                <th>Fecha</th>
+                                <th>F. Crear</th>
                                 <th>Salón</th>
                                 <th>Duración</th>
                                 <th>Actividad</th>
@@ -59,7 +59,7 @@
                             @foreach ($reservas as $reserva)
                                 <tr>
                                     <td>{{ $reserva->id }}</td>
-                                    <td>{{ $reserva->fecha }}</td>
+                                    <td>{{ \Carbon\Carbon::parse($reserva->created_at)->format('d/m/Y') }}</td>
                                     <td class="{{ [
                                         'Auditorio Jorge L. Quijada' => 'text-white',
                                         'Trabajo en Equipo' => 'bg-success text-white',
@@ -275,7 +275,7 @@
             $('.form-check-label').removeClass('border-primary border-2');
             $(this).closest('.form-check-label').addClass('border-primary border-2');
         });
-        
+
     </script>
 </body>
 </html>

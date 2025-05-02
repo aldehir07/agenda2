@@ -1,8 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-gradient" style="background-color: #5560db;">
+<nav class="navbar navbar-expand-lg navbar-light bg-gradient fw-bold text-dark" style="background-color: #d8d9e9;">
+
     <div class="container">
-        <a class="navbar-brand d-flex align-items-center" href="{{ route('home') }}">
-            <i class="fas fa-calendar-alt me-2"></i>
-            <span>Sistema de Reservas</span>
+        <a class="navbar-brand d-flex align-items-center" href="{{ route('calendario') }}">
+            <img src="{{asset('images/SIRAACG.png')}}" alt="logo" class="img-fluid" style="max-height: 40px;">
         </a>
 
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
@@ -22,6 +22,11 @@
                     <li class="nav-item">
                         <a class="nav-link " href="{{route('calendario')}}">
                             <i class="fas fa-calendar-plus me-1"></i> Reservar
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link " href="{{route('tabla2')}}">
+                            <i class="fas fa-calendar-plus me-1"></i> Consulta
                         </a>
                     </li>
                 @endif
