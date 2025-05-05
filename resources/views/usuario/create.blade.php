@@ -16,7 +16,7 @@
                 <div class="col-md-4">
                     <div class="register-card">
                         <div class="register-header">
-                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4">
+                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4" style="height: 40px; width: 150px;">
                             <h4>Crear Nueva Cuenta</h4>
                             <p class="text-muted">Completa el formulario para registrarte</p>
                         </div>
@@ -60,7 +60,7 @@
                                     <div class="password-requirements mb-3">
                                         <small>La contraseña debe contener:</small>
                                         <ul>
-                                            <li>Mínimo 8 caracteres</li>
+                                            <li>Mínimo 4 caracteres</li>
                                         </ul>
                                     </div>
                                 </div>

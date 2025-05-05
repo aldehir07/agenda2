@@ -4,17 +4,18 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
-    <title>Calendario - Prueba</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <title>Calendario - Sistema de Reservas</title>
     <link rel="stylesheet" href="{{ asset('css/calendario.css') }}">
+
 </head>
 
 <body>
     @include('plantilla.nabvar')
-    <div class="container">
+    <div class="container py-4">
+        <h2 class="text-center text-white mb-4">Calendario de Reservas</h2>
 
-        <h2>Calendario de Reservas</h2>
         {{-- MENSAJES DE ERROR Y ÉXITO --}}
         @if (session('error'))
             <div class="alert alert-danger">
@@ -63,20 +64,27 @@
             </form>
             @else
             <!-- Selector de Semana (solo visible en vista semanal) -->
-            <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
+            <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-3 bg-light p-3 rounded shadow">
                 <input type="hidden" name="vista" value="semanal">
-                <label for="semana" class="form-label fw-bold mb-0">📅 Semana:</label>
-                <select name="semana" id="semana" class="form-select w-auto" onchange="this.form.submit()">
-                    @php
-                        $semanaActual = request('semana', now()->weekOfYear);
-                        $totalSemanas = 52;
-                    @endphp
-                    @foreach (range(1, $totalSemanas) as $s)
-                        <option value="{{ $s }}" {{ $s == $semanaActual ? 'selected' : '' }}>
-                            Semana {{ $s }}
-                        </option>
-                    @endforeach
-                </select>
+                <label for="semana" class="form-label fw-bold mb-0 text-primary">
+                    <i class="fas fa-calendar-week me-2"></i> Seleccionar Semana:
+                </label>
+                <div class="input-group w-auto">
+                    <select name="semana" id="semana" class="form-select" onchange="this.form.submit()">
+                        @php
+                            $semanaActual = request('semana', now()->weekOfYear);
+                            $totalSemanas = 52;
+                        @endphp
+                        @foreach (range(1, $totalSemanas) as $s)
+                            <option value="{{ $s }}" {{ $s == $semanaActual ? 'selected' : '' }}>
+                                Semana {{ $s }}
+                            </option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
             </form>
             @endif
         </div>
@@ -168,7 +176,7 @@
             <div class="week-grid">
                 <!-- Columna de horas -->
                 <div class="week-grid__hours">
-                    @for($hora = 6; $hora <= 22; $hora++)
+                    @for($hora = 5; $hora <= 22; $hora++)
                         <div class="week-grid__hour">{{ str_pad($hora, 2, '0', STR_PAD_LEFT) }}:00</div>
                     @endfor
                 </div>
@@ -248,9 +256,7 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-gtEjrD/SeCtmISkJkNUaaKMoLD0//ElJ19smozuHV6z3Iehds+3Ulb9Bn9Plx0x4" crossorigin="anonymous">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 
     <script>
@@ -277,7 +283,7 @@
             document.getElementById('modalSalon').textContent = reserva.salon;
             document.getElementById('modalColorSalon').className = coloresSalones[reserva.salon] || 'bg-light';
             document.getElementById('modalFecha').textContent = fecha;
-            document.getElementById('modalHorario').textContent = 
+            document.getElementById('modalHorario').textContent =
                 `${moment(reserva.hora_inicio, 'HH:mm:ss').format('h:mm')} - ${moment(reserva.hora_fin, 'HH:mm:ss').format('h:mm')}`;
             document.getElementById('modalActividad').textContent = reserva.actividad;
             document.getElementById('modalAnalista').textContent = reserva.analista;

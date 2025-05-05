@@ -18,7 +18,7 @@
                 <div class="col-md-4">
                     <div class="login-card">
                         <div class="login-header">
-                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4" >
+                            <img src="{{ asset('images/SIRAACG.png') }}" alt="Logo" class="mb-4" style="height: 40px; width: 150px;" >
                             <h4>Bienvenido al Sistema</h4>
                             <p class="text-muted">Ingresa tus credenciales para continuar</p>
                         </div>
@@ -44,13 +44,13 @@
                                 <label for="password">Contraseña</label>
                             </div>
 
-                            <div class="form-check mb-3">
+                            {{-- <div class="form-check mb-3">
                                 <input class="form-check-input" type="checkbox" id="remember_me"
                                     name="remember">
                                 <label class="form-check-label" for="remember_me">
                                     Recordar mis datos
                                 </label>
-                            </div>
+                            </div> --}}
 
                             <button type="submit" class="btn btn-primary btn-login">
                                 <i class="fas fa-sign-in-alt me-2"></i>Iniciar Sesión

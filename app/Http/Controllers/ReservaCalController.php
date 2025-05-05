@@ -22,9 +22,11 @@ class ReservaCalController extends Controller
             $fechaInicio = Carbon::now()->setISODate($anioActual, $semanaActual)->startOfWeek();
             $fechaFin = $fechaInicio->copy()->endOfWeek();
 
-            $reservaCals = $reservaCals->filter(function($reserva) use ($fechaInicio, $fechaFin) {
+            // Filtrar reservas que coincidan con la semana seleccionada
+            $reservaCals = $reservaCals->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
                 return Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin) ||
-                       Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin);
+                       Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin) ||
+                       ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
             });
         }
 

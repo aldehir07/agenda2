@@ -1,5 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-gradient fw-bold text-dark" style="background-color: #d8d9e9;">
-
+<nav class="navbar navbar-expand-lg navbar-light bg-gradient fw-bold text-dark mb-2" style="background-color: #e9e9f0; box-shadow: 0 5px 10px rgba(0,0,0,0.1);">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center" href="{{ route('calendario') }}">
             <img src="{{asset('images/SIRAACG.png')}}" alt="logo" class="img-fluid" style="max-height: 40px;">
@@ -24,11 +23,11 @@
                             <i class="fas fa-calendar-plus me-1"></i> Reservar
                         </a>
                     </li>
-                    <li class="nav-item">
+                    {{-- <li class="nav-item">
                         <a class="nav-link " href="{{route('tabla2')}}">
                             <i class="fas fa-calendar-plus me-1"></i> Consulta
                         </a>
-                    </li>
+                    </li> --}}
                 @endif
             </ul>
 
@@ -59,3 +58,17 @@
         </div>
     </div>
 </nav>
+
+<style>
+    .nav-link {
+        transition: color 0.3s ease, background-color 0.3s ease;
+        font-size: 0.95rem;
+        letter-spacing: 0.5px;
+    }
+
+    .nav-link:hover {
+        color: #3f51b5 !important;
+        background-color: rgba(63, 81, 181, 0.1);
+        border-radius: 4px;
+    }
+</style>

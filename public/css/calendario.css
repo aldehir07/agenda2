@@ -1,4 +1,8 @@
 /* Estilos del calendario */
+body {
+    background: url('/images/Recepcion.webp') no-repeat center center fixed;
+    background-size: cover;
+}
 .calendar-month {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -8,9 +12,11 @@
 
 .calendar__header {
     text-align: center;
+    color: white;
     font-weight: bold;
     padding: 10px;
-    background-color: #f8f9fa;
+    background-color: #3f78b1;
+    border-radius: 4px;
 }
 
 .calendar__day {
@@ -26,6 +32,7 @@
 
 .calendar__date {
     display: block;
+    font-weight: bold;
     text-align: right;
     margin-bottom: 5px;
     text-decoration: none;
@@ -48,18 +55,25 @@
 .calendar-week {
     margin-top: 20px;
     overflow-x: auto;
+    background: rgba(255, 255, 255, 0.9); /* Fondo semitransparente */
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
 }
 
 .week-grid {
     display: grid;
-    grid-template-columns: 60px repeat(7, 1fr);
-    min-width: 800px;
+    grid-template-columns: 80px repeat(7, 2fr);
+    min-width: 1000px;
     background: white;
     border: 1px solid #dee2e6;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .week-grid__hours {
     border-right: 1px solid #dee2e6;
+    background: #f8f9fa;
 }
 
 .week-grid__hour {
@@ -68,40 +82,72 @@
     border-bottom: 1px solid #dee2e6;
     font-size: 0.8em;
     color: #666;
+    text-align: center;
+    line-height: 60px;
 }
 
 .week-grid__day {
     border-right: 1px solid #dee2e6;
     min-width: 150px;
+    position: relative;
 }
 
 .week-grid__day-header {
     text-align: center;
     padding: 10px;
-    background-color: #f8f9fa;
-    border-bottom: 1px solid #dee2e6;
+    background-color: #007bff;
+    color: white;
     font-weight: bold;
+    border-bottom: 1px solid #dee2e6;
 }
 
 .week-grid__day-content {
     position: relative;
     height: 1020px; /* 17 horas * 60px */
+    background: #f8f9fa;
 }
 
 .week-grid__event {
     position: absolute;
-    left: 0;
-    right: 0;
-    margin: 0 2px;
+    left: 5px;
+    right: 5px;
+    margin: 2px 0;
     padding: 5px;
-    border-radius: 3px;
-    font-size: 0.8em;
+    border-radius: 5px;
+    font-size: 0.9em;
     color: white;
     overflow: hidden;
     cursor: pointer;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
 }
 
 .week-grid__event-content {
     font-size: 0.9em;
     line-height: 1.2;
+    text-align: center;
+}
+
+.week-grid__event.bg-success {
+    background-color: #28a745;
+}
+
+.week-grid__event.bg-info {
+    background-color: #17a2b8;
+}
+
+.week-grid__event.bg-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.week-grid__event.bg-danger {
+    background-color: #dc3545;
+}
+
+.week-grid__event.bg-primary {
+    background-color: #007bff;
+}
+
+.week-grid__event.bg-dark {
+    background-color: #343a40;
 }
