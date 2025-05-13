@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
 </head>
+
 <body>
     @include('plantilla.nabvar')
     <div class="container py-4">
@@ -39,7 +41,8 @@
                                         <label for="fecha" class="form-label">Fecha</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-calendar"></i></span>
-                                            <input type="date" class="form-control" name="fecha" value="{{ request('fecha') }}" required readonly>
+                                            <input type="date" class="form-control" name="fecha"
+                                                value="{{ request('fecha') }}" required readonly>
                                         </div>
                                     </div>
 
@@ -48,7 +51,8 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-building"></i></span>
                                             <select class="form-select" name="depto_responsable" required>
-                                                <option value="" disabled selected>Seleccione departamento</option>
+                                                <option value="" disabled selected>Seleccione departamento
+                                                </option>
                                                 <option value="Presencial">Presencial</option>
                                                 <option value="A distancia">A distancia</option>
                                                 <option value="Direccion">Dirección</option>
@@ -62,7 +66,8 @@
                                             <span class="input-group-text"><i class="fas fa-door-open"></i></span>
                                             <select name="salon" class="form-select" required>
                                                 <option value="" disabled selected>Selecciona un salón</option>
-                                                <option value="Auditorio Jorge L. Quijada">Auditorio Jorge L. Quijada</option>
+                                                <option value="Auditorio Jorge L. Quijada">Auditorio Jorge L. Quijada
+                                                </option>
                                                 <option value="Trabajo en Equipo">Trabajo en Equipo</option>
                                                 <option value="Comunicación Asertiva">Comunicación Asertiva</option>
                                                 <option value="Servicio al Cliente">Servicio al Cliente</option>
@@ -87,7 +92,8 @@
                                                 <label for="hora_inicio" class="form-label">Hora Inicio</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <input type="time" class="form-control" name="hora_inicio" required>
+                                                    <input type="time" class="form-control" name="hora_inicio"
+                                                        required>
                                                 </div>
                                             </div>
                                         </div>
@@ -118,40 +124,46 @@
                                         </div>
                                     </div>
 
+                                    @php
+                                        $mesActual = \Carbon\Carbon::now()->locale('es')->monthName; // Obtiene el mes actual en español
+                                        $mesActual = ucfirst($mesActual); // Primera letra en mayúscula para que coincida con las opciones
+                                    @endphp
+
                                     <div class="mb-3">
                                         <label class="form-label">Mes</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
                                             <select class="form-select" name="mes" required>
-                                                <option value="" disabled selected>Selecciona un mes</option>
-                                                <option value="Enero">Enero</option>
-                                                <option value="Febrero">Febrero</option>
-                                                <option value="Marzo">Marzo</option>
-                                                <option value="Abril">Abril</option>
-                                                <option value="Mayo">Mayo</option>
-                                                <option value="Junio">Junio</option>
-                                                <option value="Julio">Julio</option>
-                                                <option value="Agosto">Agosto</option>
-                                                <option value="Septiembre">Septiembre</option>
-                                                <option value="Octubre">Octubre</option>
-                                                <option value="Noviembre">Noviembre</option>
-                                                <option value="Diciembre">Diciembre</option>
+                                                <option value="" disabled
+                                                    {{ old('mes', $mes ?? '') == '' ? 'selected' : '' }}>Selecciona un
+                                                    mes</option>
+                                                @foreach (['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $mes)
+                                                    <option value="{{ $mes }}"
+                                                        {{ old('mes', $mesActual) == $mes ? 'selected' : '' }}>
+                                                        {{ $mes }}
+                                                    </option>
+                                                @endforeach
                                             </select>
                                         </div>
                                     </div>
 
+                                    @php
+                                        $fechaInicio = request('fecha'); // Captura la fecha pasada en la URL
+                                    @endphp
+
                                     <div class="mb-3">
-                                        <label class="form-label">Fecha Inicio</label>
-                                        <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-calendar-plus"></i></span>
-                                            <input class="form-control" type="date" name="fecha_inicio" required>
-                                        </div>
+                                        <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
+                                        <input type="date" name="fecha_inicio" id="fecha_inicio"
+                                            class="form-control" value="{{ old('fecha_inicio', $fechaInicio) }}"
+                                            required>
                                     </div>
+
 
                                     <div class="mb-3">
                                         <label class="form-label">Fecha Final</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-calendar-minus"></i></span>
+                                            <span class="input-group-text"><i
+                                                    class="fas fa-calendar-minus"></i></span>
                                             <input class="form-control" type="date" name="fecha_final" required>
                                         </div>
                                     </div>
@@ -171,7 +183,8 @@
                                             <div class="mb-3">
                                                 <label for="receso_am" class="form-label">Receso AM</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-coffee"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-coffee"></i></span>
                                                     <input type="time" class="form-control" name="receso_am">
                                                     <span class="input-group-text">15 min</span>
                                                 </div>
@@ -181,7 +194,8 @@
                                             <div class="mb-3">
                                                 <label for="receso_pm" class="form-label">Receso PM</label>
                                                 <div class="input-group">
-                                                    <span class="input-group-text"><i class="fas fa-coffee"></i></span>
+                                                    <span class="input-group-text"><i
+                                                            class="fas fa-coffee"></i></span>
                                                     <input type="time" class="form-control" name="receso_pm">
                                                     <span class="input-group-text">15 min</span>
                                                 </div>
@@ -203,15 +217,18 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="cant_participantes" class="form-label">Cantidad de Participantes</label>
+                                        <label for="cant_participantes" class="form-label">Cantidad de
+                                            Participantes</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                            <input type="number" class="form-control" name="cant_participantes" required min="1">
+                                            <input type="number" class="form-control" name="cant_participantes"
+                                                required min="1">
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="requisitos_tecnicos" class="form-label">Requisitos Técnicos</label>
+                                        <label for="requisitos_tecnicos" class="form-label">Requisitos
+                                            Técnicos</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <textarea class="form-control" name="requisitos_tecnicos" rows="2"></textarea>
@@ -238,7 +255,8 @@
                                         <label class="form-label">Facilitador o Moderador</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                            <input class="form-control" type="text" name="facilitador_moderador" required>
+                                            <input class="form-control" type="text" name="facilitador_moderador"
+                                                required>
                                         </div>
                                     </div>
 
@@ -250,6 +268,7 @@
                                                 <option value="Programado">Programado</option>
                                                 <option value="Cancelado">Cancelado</option>
                                                 <option value="Realizado">Realizado</option>
+                                                <option value="Reprogramado">Reprogramado</option>
                                             </select>
                                         </div>
                                     </div>
@@ -295,40 +314,41 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://kit.fontawesome.com/your-code.js"></script>
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Validación de horas
-        const horaInicio = document.querySelector('input[name="hora_inicio"]');
-        const horaFin = document.querySelector('input[name="hora_fin"]');
-        const recesoAM = document.querySelector('input[name="receso_am"]');
-        const recesoPM = document.querySelector('input[name="receso_pm"]');
+        document.addEventListener('DOMContentLoaded', function() {
+            // Validación de horas
+            const horaInicio = document.querySelector('input[name="hora_inicio"]');
+            const horaFin = document.querySelector('input[name="hora_fin"]');
+            const recesoAM = document.querySelector('input[name="receso_am"]');
+            const recesoPM = document.querySelector('input[name="receso_pm"]');
 
-        function validarHoras() {
-            if (horaInicio.value && horaFin.value) {
-                if (horaInicio.value >= horaFin.value) {
-                    alert('La hora de inicio debe ser menor a la hora de fin');
-                    horaFin.value = '';
+            function validarHoras() {
+                if (horaInicio.value && horaFin.value) {
+                    if (horaInicio.value >= horaFin.value) {
+                        alert('La hora de inicio debe ser menor a la hora de fin');
+                        horaFin.value = '';
+                    }
                 }
             }
-        }
 
-        function validarRecesos() {
-            if (horaInicio.value && horaFin.value) {
-                if (recesoAM.value && (recesoAM.value <= horaInicio.value || recesoAM.value >= horaFin.value)) {
-                    alert('El receso AM debe estar dentro del horario del evento');
-                    recesoAM.value = '';
-                }
-                if (recesoPM.value && (recesoPM.value <= horaInicio.value || recesoPM.value >= horaFin.value)) {
-                    alert('El receso PM debe estar dentro del horario del evento');
-                    recesoPM.value = '';
+            function validarRecesos() {
+                if (horaInicio.value && horaFin.value) {
+                    if (recesoAM.value && (recesoAM.value <= horaInicio.value || recesoAM.value >= horaFin.value)) {
+                        alert('El receso AM debe estar dentro del horario del evento');
+                        recesoAM.value = '';
+                    }
+                    if (recesoPM.value && (recesoPM.value <= horaInicio.value || recesoPM.value >= horaFin.value)) {
+                        alert('El receso PM debe estar dentro del horario del evento');
+                        recesoPM.value = '';
+                    }
                 }
             }
-        }
 
-        horaInicio.addEventListener('change', validarHoras);
-        horaFin.addEventListener('change', validarHoras);
-        recesoAM.addEventListener('change', validarRecesos);
-        recesoPM.addEventListener('change', validarRecesos);
-    });
+            horaInicio.addEventListener('change', validarHoras);
+            horaFin.addEventListener('change', validarHoras);
+            recesoAM.addEventListener('change', validarRecesos);
+            recesoPM.addEventListener('change', validarRecesos);
+        });
     </script>
 </body>
+
 </html>

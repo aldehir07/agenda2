@@ -35,27 +35,29 @@
                             @csrf
                             <div class="row">
                                 <div class="col-md-6">
+                                    <label for="name">Nombre Completo</label>
                                     <div class="form-floating mb-3">
                                         <input type="text" class="form-control" id="name" name="name"
                                             placeholder="Tu nombre" value="{{ old('name') }}" required>
-                                        <label for="name">Nombre Completo</label>
+
                                     </div>
                                 </div>
                                 <div class="col-md-6">
+                                    <label for="email">Correo Electrónico</label>
                                     <div class="form-floating mb-3">
                                         <input type="email" class="form-control" id="email" name="email"
                                             placeholder="nombre@ejemplo.com" value="{{ old('email') }}" required>
-                                        <label for="email">Correo Electrónico</label>
+
                                     </div>
                                 </div>
                             </div>
 
                             <div class="row">
                                 <div class="col-md-6">
+                                    <label for="password">Contraseña</label>
                                     <div class="form-floating mb-3">
                                         <input type="password" class="form-control" id="password"
                                             name="password" placeholder="Contraseña" required>
-                                        <label for="password">Contraseña</label>
                                     </div>
                                     <div class="password-requirements mb-3">
                                         <small>La contraseña debe contener:</small>
@@ -65,10 +67,11 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6">
+                                    <label for="password_confirmation">Confirmar Contraseña</label>
                                     <div class="form-floating mb-3">
                                         <input type="password" class="form-control" id="password_confirmation"
                                             name="password_confirmation" placeholder="Confirmar Contraseña" required>
-                                        <label for="password_confirmation">Confirmar Contraseña</label>
+
                                     </div>
                                 </div>
                             </div>

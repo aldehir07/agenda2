@@ -117,13 +117,15 @@
                                         $estatusClass = [
                                             'Programado' => 'bg-primary',
                                             'Realizado' => 'bg-success',
-                                            'Cancelado' => 'bg-danger'
+                                            'Cancelado' => 'bg-danger',
+                                            'Reprogramado' => 'bg-warning'  // Nuevo estado agregado
                                         ][$reserva->estatus] ?? 'bg-secondary';
 
                                         $estatusIcon = [
                                             'Programado' => 'calendar-check',
                                             'Realizado' => 'check-circle',
-                                            'Cancelado' => 'times-circle'
+                                            'Cancelado' => 'times-circle',
+                                            'Reprogramado' => 'exclamation-triangle'  // Nueva opción de ícono
                                         ][$reserva->estatus] ?? 'question-circle';
                                     @endphp
                                     <span class="badge {{ $estatusClass }} d-flex align-items-center"

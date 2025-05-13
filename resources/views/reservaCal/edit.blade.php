@@ -325,6 +325,9 @@
                                                 <option value="Realizado"
                                                     {{ $reservaCal->estatus == 'Realizado' ? 'selected' : '' }}>
                                                     Realizado</option>
+                                                    <option value="Reprogramado"
+                                                    {{ $reservaCal->estatus == 'Reprogramado' ? 'selected' : '' }}>
+                                                    Reprogramado</option>
                                             </select>
                                         </div>
                                     </div>

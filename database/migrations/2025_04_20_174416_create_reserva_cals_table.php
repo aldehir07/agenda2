@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('publico_meta');
             $table->integer('cant_participantes');
             $table->string('facilitador_moderador');
-            $table->enum('estatus', ['Programado', 'Cancelado', 'Realizado']);
+            $table->enum('estatus', ['Programado', 'Cancelado', 'Realizado', 'Reprogramado']);
             $table->text('insumos')->nullable();
             $table->text('requisitos_tecnicos')->nullable();
             $table->enum('asistencia_tecnica', ['Si', 'No']);

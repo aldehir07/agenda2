@@ -33,9 +33,9 @@
                         <form method="POST" action="{{route('loginpost')}}">
                             @csrf
                             <div class="form-floating mb-3">
-                                <input type="email" class="form-control" id="email" name="email"
-                                    placeholder="nombre@ejemplo.com" value="{{ old('email') }}" required>
-                                <label for="email">Correo Electrónico</label>
+                                <input type="name" class="form-control" id="name" name="name"
+                                     value="{{ old('name') }}" required>
+                                <label for="name">Nombre</label>
                             </div>
 
                             <div class="form-floating mb-3">
