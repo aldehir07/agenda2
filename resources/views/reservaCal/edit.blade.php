@@ -209,6 +209,22 @@
                                                 value="{{ old('fecha_final', $reservaCal->fecha_final) }}" required>
                                         </div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="modalidad" class="form-label">Modalidad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i
+                                                    class="fas fa-chalkboard-teacher"></i></span>
+                                            <select name="modalidad" id="modalidad" class="form-select" required>
+                                                <option value="" disabled>Seleccione modalidad</option>
+                                                <option value="Presencial"
+                                                    {{ old('modalidad') == 'Presencial' ? 'selected' : '' }}>Presencial
+                                                </option>
+                                                <option value="Virtual"
+                                                    {{ old('modalidad') == 'Virtual' ? 'selected' : '' }}>Virtual
+                                                </option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -251,14 +267,31 @@
                                         <label for="tipo_actividad" class="form-label">Tipo de Actividad</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                            <select name="tipo_actividad" class="form-select" required>
-                                                <option value="" disabled>Seleccione tipo</option>
-                                                <option value="Capacitación" {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'Capacitación' ? 'selected' : '' }}>
-                                                    Capacitación</option>
-                                                <option value="Reunión" {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'Reunión' ? 'selected' : '' }}>
+                                            <select name="tipo_actividad" id="tipo_actividad" class="form-select"
+                                                required>
+                                                <option value="" disabled
+                                                    {{ old('tipo_actividad', $reservaCal->tipo_actividad) == '' ? 'selected' : '' }}>
+                                                    Seleccione tipo</option>
+                                                <option value="Capacitacion"
+                                                    {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'Capacitacion' ? 'selected' : '' }}>
+                                                    Capacitacion</option>
+                                                <option value="Reunion"
+                                                    {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'Reunion' ? 'selected' : '' }}>
                                                     Reunión</option>
-                                                <option value="REPLICA" {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'REPLICA' ? 'selected' : '' }}>
+                                                <option value="REPLICA"
+                                                    {{ old('tipo_actividad', $reservaCal->tipo_actividad) == 'REPLICA' ? 'selected' : '' }}>
                                                     REPLICA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="subtipo_actividad" class="form-label">Subtipo de Actividad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-list"></i></span>
+                                            <select name="subtipo_actividad" id="subtipo_actividad"
+                                                class="form-select">
+                                                <option value="">Seleccione subtipo</option>
                                             </select>
                                         </div>
                                     </div>
@@ -325,7 +358,7 @@
                                                 <option value="Realizado"
                                                     {{ $reservaCal->estatus == 'Realizado' ? 'selected' : '' }}>
                                                     Realizado</option>
-                                                    <option value="Reprogramado"
+                                                <option value="Reprogramado"
                                                     {{ $reservaCal->estatus == 'Reprogramado' ? 'selected' : '' }}>
                                                     Reprogramado</option>
                                             </select>
@@ -417,6 +450,44 @@
             horaFin.addEventListener('change', validarHoras);
             recesoAM.addEventListener('change', validarRecesos);
             recesoPM.addEventListener('change', validarRecesos);
+        });
+
+        // Cambiar subtipo de actividad según el tipo seleccionado
+        const subtipoActividadMap = {
+            'Capacitacion': ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller'],
+            'Reunion': ['Ninguno'],
+            'REPLICA': ['Seminario', 'Taller', 'Seminario/Taller']
+        };
+
+        const tipoActividadSelect = document.getElementById('tipo_actividad');
+        const subtipoActividadSelect = document.getElementById('subtipo_actividad');
+        const valorActual = "{{ old('subtipo_actividad', $reservaCal->subtipo_actividad) }}";
+
+        function cargarSubtipos(tipo) {
+            subtipoActividadSelect.innerHTML = '<option value="">Seleccione subtipo</option>';
+            if (subtipoActividadMap[tipo]) {
+                subtipoActividadMap[tipo].forEach(function(subtipo) {
+                    const option = document.createElement('option');
+                    option.value = subtipo;
+                    option.text = subtipo;
+                    if (subtipo === valorActual) {
+                        option.selected = true;
+                    }
+                    subtipoActividadSelect.appendChild(option);
+                });
+            }
+        }
+
+        tipoActividadSelect.addEventListener('change', function() {
+            cargarSubtipos(this.value);
+        });
+
+        // Cargar subtipos al cargar la página si ya hay un tipo seleccionado
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoSeleccionado = tipoActividadSelect.value;
+            if (tipoSeleccionado) {
+                cargarSubtipos(tipoSeleccionado);
+            }
         });
     </script>
 </body>

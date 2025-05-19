@@ -43,9 +43,9 @@
                 <div class="table-responsive">
                     <table id="registrosTable" class="table table-striped table-bordered table-hover">
                         <thead class="table-dark">
-                            <tr>
-                                <th scope="col" data-column="id">ID</th>
-                                <th scope="col" data-column="created_at">F. Crear</th>
+                            <tr class="text-center">
+                                {{-- <th scope="col" data-column="id">ID</th>
+                                <th scope="col" data-column="created_at">F. Crear</th> --}}
                                 <th scope="col" data-column="salon">Salón</th>
                                 <th scope="col" data-column="duracion">Duración</th>
                                 <th scope="col" data-column="actividad">Actividad</th>
@@ -57,6 +57,7 @@
                                 <th scope="col" data-column="hora_inicio">Inicio</th>
                                 <th scope="col" data-column="hora_fin">Final</th>
                                 <th scope="col" data-column="tipo_actividad">Tipo</th>
+                                <th scope="col" data-column="subtipo_actividad">Subtipo</th>
                                 <th scope="col" data-column="receso_am">Receso AM</th>
                                 <th scope="col" data-column="receso_pm">Receso PM</th>
                                 <th scope="col" data-column="publico_meta">Publico Meta</th>
@@ -70,8 +71,8 @@
                         <tbody>
                             @foreach ($reservas as $reserva)
                             <tr>
-                                <th scope="row" data-column="id">{{ $reserva->id }}</td>
-                                <td data-column="created_at">{{ \Carbon\Carbon::parse($reserva->created_at)->format('d/m/Y') }}</td>
+                                {{-- <th scope="row" data-column="id">{{ $reserva->id }}</td>
+                                <td data-column="created_at">{{ \Carbon\Carbon::parse($reserva->created_at)->format('d/m/Y') }}</td> --}}
                                 <td data-column="salon" class="{{ [
                                     'Auditorio Jorge L. Quijada' => 'text-white',
                                     'Trabajo en Equipo' => 'bg-success text-white',
@@ -94,6 +95,7 @@
                                 <td data-column="fecha_inicio">{{ \Carbon\Carbon::parse($reserva->fecha_inicio)->format('d/m/Y') }}</td>
                                 <td data-column="fecha_final">{{ \Carbon\Carbon::parse($reserva->fecha_final)->format('d/m/Y') }}</td>
                                 <td data-column="tipo_actividad">{{ $reserva->tipo_actividad }}</td>
+                                <td data-column="subtipo_actividad">{{ $reserva->subtipo_actividad ?? 'N/A' }}</td>
                                 <td data-column="receso_am">
                                     @if($reserva->receso_am)
                                         {{ \Carbon\Carbon::parse($reserva->receso_am)->format('g:i A') }}
@@ -141,6 +143,13 @@
                                         <a href="{{ route('reservaCal.edit', $reserva->id) }}" class="btn btn-sm btn-warning">
                                             <i class="fas fa-edit"></i> Editar
                                         </a>
+                                        <form action="{{ route('reservaCal.destroy', $reserva->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-sm btn-danger" >
+                                                <i class="fas fa-trash"></i> Eliminar
+                                            </button>
+                                        </form>
                                     @endif
                                 </td>
                             </tr>

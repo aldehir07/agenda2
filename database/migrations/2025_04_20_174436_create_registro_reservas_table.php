@@ -20,12 +20,14 @@ return new class extends Migration
             $table->string('analista');
             $table->text('actividad');
             $table->string('depto_responsable');
-            $table->string('numero_evento')->unique();
+            $table->string('numero_evento', 10)->unique();
             $table->string('scafid')->nullable();
             $table->string('mes');
             $table->date('fecha_inicio');
             $table->date('fecha_final');
             $table->enum('tipo_actividad', ['Reunion', 'Capacitacion', 'REPLICA']);
+            $table->enum('subtipo_actividad', ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller', 'Ninguno']);
+            $table->enum('modalidad', ['Presencial', 'Virtual']);
             $table->time('receso_am')->nullable();
             $table->time('receso_pm')->nullable();
             $table->string('publico_meta');

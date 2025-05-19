@@ -26,6 +26,8 @@ return new class extends Migration
             $table->date('fecha_inicio');
             $table->date('fecha_final');
             $table->enum('tipo_actividad', ['Reunion', 'Capacitacion', 'REPLICA']);
+            $table->enum('subtipo_actividad', ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller', 'Ninguno']);
+            $table->enum('modalidad', ['Presencial', 'Virtual']);
             $table->time('receso_am')->nullable();
             $table->time('receso_pm')->nullable();
             $table->string('publico_meta');

@@ -17,11 +17,6 @@ class RegistroReservaController extends Controller
         return view('verRegistro.index', compact('reservas'));
     }
 
-    public function index2(){
-        $reservas = RegistroReserva::orderBy('fecha_inicio', 'asc')->get(); // Ordenar por fecha de inicio
-        return view('verRegistro.tabla2', compact('reservas'));
-    }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -57,9 +52,8 @@ class RegistroReservaController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, RegistroReserva $registroReserva)
+    public function update(Request $request, ReservaCal $reservaCal)
     {
-
 
     }
 

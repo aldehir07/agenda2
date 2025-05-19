@@ -13,6 +13,8 @@ Route::middleware('auth')->group(function(){
     Route::resource('verRegistro', RegistroReservaController::class);
     Route::resource('reservaCal', ReservaCalController::class);
     route::get('tabla2', [RegistroReservaController::class, 'index2'])->name('tabla2');
+    Route::post('reservaCal/{reservaCal}/cancel', [ReservaCalController::class, 'cancel'])->name('reservaCal.cancel');
+
 });
 
 

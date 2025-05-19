@@ -167,6 +167,17 @@
                                             <input class="form-control" type="date" name="fecha_final" required>
                                         </div>
                                     </div>
+                                    <div class="mb-3">
+                                        <label for="modalidad" class="form-label">Modalidad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
+                                            <select name="modalidad" id="modalidad" class="form-select" required>
+                                                <option value="" disabled {{ old('modalidad') == '' ? 'selected' : '' }}>Seleccione modalidad</option>
+                                                <option value="Presencial" {{ old('modalidad') == 'Presencial' ? 'selected' : '' }}>Presencial</option>
+                                                <option value="Virtual" {{ old('modalidad') == 'Virtual' ? 'selected' : '' }}>Virtual</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -207,11 +218,20 @@
                                         <label for="tipo_actividad" class="form-label">Tipo de Actividad</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tag"></i></span>
-                                            <select name="tipo_actividad" class="form-select" required>
+                                            <select name="tipo_actividad" id="tipo_actividad" class="form-select" required>
                                                 <option value="" disabled selected>Seleccione tipo</option>
-                                                <option value="Capacitación">Capacitación</option>
-                                                <option value="Reunión">Reunión</option>
+                                                <option value="Capacitacion">Capacitacion</option>
+                                                <option value="Reunion">Reunión</option>
                                                 <option value="REPLICA">REPLICA</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="subtipo_actividad" class="form-label">Subtipo de Actividad</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-list"></i></span>
+                                            <select name="subtipo_actividad" id="subtipo_actividad" class="form-select">
+                                                <option value="">Seleccione subtipo</option>
                                             </select>
                                         </div>
                                     </div>
@@ -347,6 +367,34 @@
             horaFin.addEventListener('change', validarHoras);
             recesoAM.addEventListener('change', validarRecesos);
             recesoPM.addEventListener('change', validarRecesos);
+        });
+
+        // Cambiar subtipo de actividad según el tipo seleccionado
+        document.addEventListener('DOMContentLoaded', function () {
+            const tipoActividad = document.getElementById('tipo_actividad');
+            const subtipoActividad = document.getElementById('subtipo_actividad');
+
+            const opciones = {
+                Capacitacion: ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller'],
+                REPLICA: ['Seminario', 'Taller', 'Seminario/Taller'],
+                Reunion: ['Ninguno'] // Puede ser vacío o "Ninguno"
+            };
+
+            tipoActividad.addEventListener('change', function () {
+                const seleccion = this.value;
+                const subtipos = opciones[seleccion] || [];
+
+                // Limpiar opciones actuales
+                subtipoActividad.innerHTML = '<option value="">Seleccione subtipo</option>';
+
+                // Insertar nuevas opciones
+                subtipos.forEach(function (sub) {
+                    const option = document.createElement('option');
+                    option.value = sub;
+                    option.textContent = sub;
+                    subtipoActividad.appendChild(option);
+                });
+            });
         });
     </script>
 </body>

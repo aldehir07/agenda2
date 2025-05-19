@@ -17,6 +17,15 @@ class ReservaCalController extends Controller
         $mesSeleccionado = request('mes', now()->format('m'));
         $anioActual = now()->format('Y');
 
+        //Filtrar las reservas activas(no canceladas)
+        $reservasActivas = $reservaCals->filter(function ($reserva){
+            return strtolower(trim($reserva->estatus)) !== 'cancelado';
+        });
+        //Filtrar las reservas canceladas
+        $reservasCanceladas = $reservaCals->filter(function ($reserva){
+            return strtolower(trim($reserva->estatus)) === 'cancelado';
+        });
+
         if ($vista === 'semanal') {
             $semanaActual = request('semana', now()->weekOfYear);
             $fechaInicio = Carbon::now()->setISODate($anioActual, $semanaActual)->startOfWeek();
@@ -30,7 +39,7 @@ class ReservaCalController extends Controller
             });
         }
 
-        return view('calendario', compact('reservaCals', 'vista'));
+        return view('calendario', compact('reservaCals', 'reservasCanceladas', 'reservasActivas', 'vista'));
     }
 
 
@@ -57,12 +66,28 @@ class ReservaCalController extends Controller
                                 "Creatividad Innovadora",
                                 "Externo"',
             'depto_responsable' => 'required',
-            'numero_evento' => 'required|numeric',
+            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento',
             'scafid' => 'nullable|string',
             'mes' => 'required|string',
-            'tipo_actividad' => 'required',
+            'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
+            'subtipo_actividad' => [
+                'nullable',
+                function($attribute, $value, $fail) use ($request) {
+                    $tipo = $request->input('tipo_actividad');
+
+                    $opciones = [
+                        'Capacitacion' => ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller'],
+                        'REPLICA' => ['Seminario', 'Taller', 'Seminario/Taller'],
+                        'Reunion' => ['Ninguno', null],
+                    ];
+                    if(!in_array($value, $opciones[$tipo])){
+                        $fail("El subtipo de actividad '$value' no es valido para el tipo '$tipo'.");
+                    }
+                }
+            ],
             'receso_am' => 'nullable',
             'receso_pm' => 'nullable',
+            'modalidad' => 'required|in:Presencial,Virtual',
             'publico_meta' => 'required|string',
             'cant_participantes' => 'required|numeric',
             'facilitador_moderador' => 'required|string',
@@ -74,6 +99,7 @@ class ReservaCalController extends Controller
 
         // Verificar si ya existe una reserva en el mismo rango de fechas, horas y salón
         $existeReserva = ReservaCal::where('salon', $request->salon)
+            ->where('estatus', '!=', 'Cancelado') //Ignora reservas canceladas
             ->where(function ($query) use ($request) {
                 $query->whereBetween('fecha_inicio', [$request->fecha_inicio, $request->fecha_final])
                       ->orWhereBetween('fecha_final', [$request->fecha_inicio, $request->fecha_final]);
@@ -105,6 +131,8 @@ class ReservaCalController extends Controller
             'fecha_inicio' => $request->fecha_inicio,
             'fecha_final' => $request->fecha_final,
             'tipo_actividad' => $request->tipo_actividad,
+            'subtipo_actividad' => $request->subtipo_actividad,
+            'modalidad' => $request->modalidad,
             'receso_am' => $request->receso_am,
             'receso_pm' => $request->receso_pm,
             'publico_meta' => $request->publico_meta,
@@ -121,13 +149,13 @@ class ReservaCalController extends Controller
         return redirect()->route('calendario')->with('success', '✅ Reserva creada exitosamente.');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(ReservaCal $reservaCal)
+    //FUNCION PARA VER EL REGISTRO DE RESERVA
+    public function show($id)
     {
-        //
+        $reserva = ReservaCal::findOrFail($id);
+        return view('reservaCal.show', compact('reserva'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -158,12 +186,28 @@ class ReservaCalController extends Controller
                                 "Creatividad Innovadora",
                                 "Externo"',
             'depto_responsable' => 'required',
-            'numero_evento' => 'required|numeric',
+            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento,'. $reservaCal->id,
             'scafid' => 'nullable|string',
             'mes' => 'required|string',
-            'tipo_actividad' => 'required',
+            'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
+            'subtipo_actividad' => [
+                'nullable',
+                function($attribute, $value, $fail) use ($request) {
+                    $tipo = $request->input('tipo_actividad');
+
+                    $opciones = [
+                        'Capacitacion' => ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller'],
+                        'REPLICA' => ['Seminario', 'Taller', 'Seminario/Taller'],
+                        'Reunion' => ['Ninguno', null],
+                    ];
+                    if(!in_array($value, $opciones[$tipo])){
+                        $fail("El subtipo de actividad '$value' no es valido para el tipo '$tipo'.");
+                    }
+                }
+            ],
             'receso_am' => 'nullable',
             'receso_pm' => 'nullable',
+            'modalidad' => 'required|in:Presencial,Virtual',
             'publico_meta' => 'required|string',
             'cant_participantes' => 'required|numeric',
             'facilitador_moderador' => 'required|string',
@@ -179,11 +223,19 @@ class ReservaCalController extends Controller
         return redirect()->route('verRegistro.index')->with('success', 'Reserva actualizada exitosamente.');
     }
 
+    //FUNCION PARA CANCELAR RESERVAS
+    public function cancel(ReservaCal $reservaCal){
+        //Actualizar el estatus a 'cancelado'
+        $reservaCal->update(['estatus' => 'Cancelado']);
+        return redirect()->route('calendario')->with('success', 'Evento cancelado y removido de la agenda');
+    }
+
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(ReservaCal $reservaCal)
     {
-        //
+        $reservaCal->delete();
+        return redirect()->route('calendario')->with('success', 'Reserva elimanada exitosamente.');
     }
 }

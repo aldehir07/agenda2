@@ -24,6 +24,8 @@ class ReservaCal extends Model
         'fecha_inicio',
         'fecha_final',
         'tipo_actividad',
+        'subtipo_actividad',
+        'modalidad',
         'receso_am',
         'receso_pm',
         'publico_meta',
