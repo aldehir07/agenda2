@@ -26,6 +26,14 @@ class ReservaCalController extends Controller
             return strtolower(trim($reserva->estatus)) === 'cancelado';
         });
 
+        // Filtro por mes para eventos cancelados
+        $mesCancelado = request('mes_cancelado');
+        if ($mesCancelado) {
+            $reservasCanceladas = $reservasCanceladas->filter(function ($reserva) use ($mesCancelado) {
+                return \Carbon\Carbon::parse($reserva->fecha_inicio)->format('m') == $mesCancelado;
+            });
+        }
+
         if ($vista === 'semanal') {
             $semanaActual = request('semana', now()->weekOfYear);
             $fechaInicio = Carbon::now()->setISODate($anioActual, $semanaActual)->startOfWeek();
@@ -57,14 +65,15 @@ class ReservaCalController extends Controller
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'actividad' => 'required|string|max:255',
-            'analista' => 'required|string|max:255',
+            'analista' => 'required|string|max:20',
             'salon' => 'required|string|in:"Auditorio Jorge L. Quijada",
                                 "Trabajo en Equipo",
                                 "Comunicación Asertiva",
                                 "Servicio al Cliente",
                                 "Integridad",
                                 "Creatividad Innovadora",
-                                "Externo"',
+                                "Externo",
+                                "Campus Virtual"',
             'depto_responsable' => 'required',
             'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento',
             'scafid' => 'nullable|string',
@@ -87,9 +96,25 @@ class ReservaCalController extends Controller
             ],
             'receso_am' => 'nullable',
             'receso_pm' => 'nullable',
-            'modalidad' => 'required|in:Presencial,Virtual',
+            'modalidad' => 'required|in:Presencial,Virtual,Mixto',
             'publico_meta' => 'required|string',
-            'cant_participantes' => 'required|numeric',
+            'cant_participantes' => [
+                'required', 'numeric',
+                function ($attribute, $value) use ($request) {
+                    $limites = [
+                        'Auditorio Jorge L. Quijada' => 100,
+                        'Integridad' => 20,
+                        'Servicio al Cliente' => 30,
+                        'Comunicación Asertiva' => 40,
+                        'Trabajo en Equipo' => 30,
+                        'Creatividad Innovadora' => 10,
+                    ];
+                    $salon = $request->input('salon');
+                    if (isset($limites[$salon]) && $value > $limites[$salon]) {
+                        return back()->withErrors([$attribute => "El salón '$salon' tiene un límite de {$limites[$salon]} participantes."]);
+                    }
+                }
+            ],
             'facilitador_moderador' => 'required|string',
             'estatus' => 'required',
             'insumos' => 'nullable|string',
@@ -177,14 +202,15 @@ class ReservaCalController extends Controller
             'hora_inicio' => 'required|date_format:H:i',
             'hora_fin' => 'required|date_format:H:i|after:hora_inicio',
             'actividad' => 'required|string|max:255',
-            'analista' => 'required|string|max:255',
+            'analista' => 'required|string|max:20',
             'salon' => 'required|string|in:"Auditorio Jorge L. Quijada",
                                 "Trabajo en Equipo",
                                 "Comunicación Asertiva",
                                 "Servicio al Cliente",
                                 "Integridad",
                                 "Creatividad Innovadora",
-                                "Externo"',
+                                "Externo",
+                                "Campus Virtual"',
             'depto_responsable' => 'required',
             'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento,'. $reservaCal->id,
             'scafid' => 'nullable|string',
@@ -207,9 +233,25 @@ class ReservaCalController extends Controller
             ],
             'receso_am' => 'nullable',
             'receso_pm' => 'nullable',
-            'modalidad' => 'required|in:Presencial,Virtual',
+            'modalidad' => 'required|in:Presencial,Virtual,Mixto',
             'publico_meta' => 'required|string',
-            'cant_participantes' => 'required|numeric',
+            'cant_participantes' => [
+                'required', 'numeric',
+                function ($attribute, $value) use ($request) {
+                    $limites = [
+                        'Auditorio Jorge L. Quijada' => 100,
+                        'Integridad' => 20,
+                        'Servicio al Cliente' => 30,
+                        'Comunicación Asertiva' => 40,
+                        'Trabajo en Equipo' => 30,
+                        'Creatividad Innovadora' => 10,
+                    ];
+                    $salon = $request->input('salon');
+                    if (isset($limites[$salon]) && $value > $limites[$salon]) {
+                        return back()->withErrors([$attribute => "El salón '$salon' tiene un límite de {$limites[$salon]} participantes."]);
+                    }
+                }
+            ],
             'facilitador_moderador' => 'required|string',
             'estatus' => 'required',
             'insumos' => 'nullable|string',

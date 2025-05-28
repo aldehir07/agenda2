@@ -18,15 +18,15 @@
 
         {{-- MENSAJES DE ERROR Y ÉXITO --}}
         @if (session('error'))
-            <div class="alert alert-danger">
-                {{ session('error') }}
-            </div>
+        <div class="alert alert-danger">
+            {{ session('error') }}
+        </div>
         @endif
 
         @if (session('success'))
-            <div class="alert alert-success">
-                {{ session('success') }}
-            </div>
+        <div class="alert alert-success">
+            {{ session('success') }}
+        </div>
         @endif
 
         <div class="mb-4 d-flex align-items-center justify-content-center gap-3 bg-light p-3 rounded shadow">
@@ -39,62 +39,62 @@
                         Mensual
                     </a>
                     {{-- <a href="{{ route('calendario', ['vista' => 'semanal', 'semana' => request('semana', now()->weekOfYear)]) }}"
-                        class="btn btn-{{ request('vista', 'mensual') === 'semanal' ? 'primary' : 'outline-primary' }}">
-                        Semanal
+                    class="btn btn-{{ request('vista', 'mensual') === 'semanal' ? 'primary' : 'outline-primary' }}">
+                    Semanal
                     </a> --}}
                 </div>
             </div>
 
             @if (request('vista', 'mensual') === 'mensual')
-                <!-- Selector de Mes (solo visible en vista mensual) -->
-                <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
-                    <input type="hidden" name="vista" value="mensual">
-                    <label for="mes" class="form-label fw-bold mb-0">📅 Mes:</label>
-                    <select name="mes" id="mes" class="form-select w-auto" onchange="this.form.submit()">
-                        @php
-                            setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish_Spain', 'Spanish');
-                            $mesActual = request('mes', now()->format('m'));
-                        @endphp
-                        @foreach (range(1, 12) as $m)
-                            <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}"
-                                {{ $m == $mesActual ? 'selected' : '' }}>
-                                {{ ucfirst(strftime('%B', mktime(0, 0, 0, $m, 1))) }}
-                            </option>
-                        @endforeach
-                    </select>
-                </form>
+            <!-- Selector de Mes (solo visible en vista mensual) -->
+            <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
+                <input type="hidden" name="vista" value="mensual">
+                <label for="mes" class="form-label fw-bold mb-0">📅 Mes:</label>
+                <select name="mes" id="mes" class="form-select w-auto" onchange="this.form.submit()">
+                    @php
+                    setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish_Spain', 'Spanish');
+                    $mesActual = request('mes', now()->format('m'));
+                    @endphp
+                    @foreach (range(1, 12) as $m)
+                    <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}"
+                        {{ $m == $mesActual ? 'selected' : '' }}>
+                        {{ ucfirst(strftime('%B', mktime(0, 0, 0, $m, 1))) }}
+                    </option>
+                    @endforeach
+                </select>
+            </form>
             @else
-                <!-- Selector de Semana (solo visible en vista semanal) -->
-                {{-- <form method="GET" action="{{ route('calendario') }}"
-                    class="d-flex align-items-center gap-3 bg-light p-3 rounded shadow">
-                    <input type="hidden" name="vista" value="semanal">
-                    <label for="semana" class="form-label fw-bold mb-0 text-primary">
-                        <i class="fas fa-calendar-week me-2"></i> Seleccionar Semana:
-                    </label>
-                    <div class="input-group w-auto">
-                        <select name="semana" id="semana" class="form-select" onchange="this.form.submit()">
-                            @php
-                                $semanaActual = request('semana', now()->weekOfYear);
-                                $totalSemanas = 52;
-                            @endphp
-                            @foreach (range(1, $totalSemanas) as $s)
-                                <option value="{{ $s }}" {{ $s == $semanaActual ? 'selected' : '' }}>
-                                    Semana {{ $s }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-search"></i>
-                        </button>
-                    </div>
-                </form> --}}
+            <!-- Selector de Semana (solo visible en vista semanal) -->
+            {{-- <form method="GET" action="{{ route('calendario') }}"
+            class="d-flex align-items-center gap-3 bg-light p-3 rounded shadow">
+            <input type="hidden" name="vista" value="semanal">
+            <label for="semana" class="form-label fw-bold mb-0 text-primary">
+                <i class="fas fa-calendar-week me-2"></i> Seleccionar Semana:
+            </label>
+            <div class="input-group w-auto">
+                <select name="semana" id="semana" class="form-select" onchange="this.form.submit()">
+                    @php
+                    $semanaActual = request('semana', now()->weekOfYear);
+                    $totalSemanas = 52;
+                    @endphp
+                    @foreach (range(1, $totalSemanas) as $s)
+                    <option value="{{ $s }}" {{ $s == $semanaActual ? 'selected' : '' }}>
+                        Semana {{ $s }}
+                    </option>
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+            </div>
+            </form> --}}
             @endif
         </div>
 
         <!-- Leyenda de colores de salones -->
         <div class="mb-4 bg-light p-3 rounded shadow">
             <h6 class="fw-bold mb-2">🎨 Color de Salones:</h6>
-            <div class="d-flex flex-wrap gap-3">
+            <div class="row">
                 @php
                     $coloresSalones = [
                         'Auditorio Jorge L. Quijada' => 'text-white',
@@ -104,76 +104,78 @@
                         'Integridad' => 'bg-danger',
                         'Creatividad Innovadora' => 'bg-primary',
                         'Externo' => 'bg-dark',
+                        'Campus Virtual' => 'bg-secondary',
                     ];
+                    $salones = array_keys($coloresSalones);
                 @endphp
-                @foreach ($coloresSalones as $salon => $color)
-                    <div class="d-flex align-items-center">
-                        <span class="d-inline-block {{ $color }}"
-                            style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
-                        <span class="ms-2">{{ $salon }}</span>
-                    </div>
+                @foreach (array_chunk($salones, 4) as $fila)
+                    @foreach ($fila as $salon)
+                        <div class="col-6 col-md-3 mb-2 d-flex align-items-center">
+                            <span class="d-inline-block {{ $coloresSalones[$salon] }}"
+                                style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
+                            <span class="ms-2">{{ $salon }}</span>
+                        </div>
+                    @endforeach
                 @endforeach
             </div>
         </div>
 
         @php
-            // Variables comunes para ambas vistas
-            $anioActual = now()->format('Y');
-            $mesSeleccionado = request('mes', now()->format('m'));
+        // Variables comunes para ambas vistas
+        $anioActual = now()->format('Y');
+        $mesSeleccionado = request('mes', now()->format('m'));
         @endphp
 
         @if (request('vista', 'mensual') === 'mensual')
-            <!-- Vista Mensual -->
-            <div class="calendar calendar-month">
-                @php
-                    $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mesSeleccionado, $anioActual);
-                    $primerDia = Carbon\Carbon::createFromDate($anioActual, $mesSeleccionado, 1)->dayOfWeek;
-                    $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+        <!-- Vista Mensual -->
+        <div class="calendar calendar-month">
+            @php
+            $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mesSeleccionado, $anioActual);
+            $primerDia = Carbon\Carbon::createFromDate($anioActual, $mesSeleccionado, 1)->dayOfWeek;
+            $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+            @endphp
+
+            <!-- Encabezados de días de la semana -->
+            @foreach ($diasSemana as $dia)
+            <div class="calendar__header">{{ $dia }}</div>
+            @endforeach
+
+            <!-- Días vacíos antes del primer día del mes -->
+            @for ($i = 0; $i < $primerDia; $i++)
+                <div class="calendar__day calendar__day--disabled">
+        </div>
+        @endfor
+
+        <!-- Días del mes -->
+        @for ($i = 1; $i <= $diasEnMes; $i++)
+            @php
+            $fecha=$anioActual . '-' .
+            str_pad($mesSeleccionado, 2, '0' , STR_PAD_LEFT) . '-' .
+            str_pad($i, 2, '0' , STR_PAD_LEFT);
+            $reservasDia=$reservasActivas->filter(function ($reserva) use ($fecha) {
+            return $reserva->fecha_inicio <= $fecha && $reserva->fecha_final >= $fecha;
+                });
                 @endphp
+                {{-- Agregar reervas por dia --}}
+                <div class="calendar__day">
+                    @if (Auth::user()->role === 'admin')
+                    <a href="{{ route('reservaCal.create', ['fecha' => $fecha]) }}"
+                        class="calendar__date">{{ $i }}</a>
+                    @else
+                    <span class="calendar__date">{{ $i }}</span>
+                    @endif
 
-                <!-- Encabezados de días de la semana -->
-                @foreach ($diasSemana as $dia)
-                    <div class="calendar__header">{{ $dia }}</div>
-                @endforeach
-
-                <!-- Días vacíos antes del primer día del mes -->
-                @for ($i = 0; $i < $primerDia; $i++)
-                    <div class="calendar__day calendar__day--disabled"></div>
-                @endfor
-
-                <!-- Días del mes -->
-                @for ($i = 1; $i <= $diasEnMes; $i++)
-                    @php
-                        $fecha =
-                            $anioActual .
-                            '-' .
-                            str_pad($mesSeleccionado, 2, '0', STR_PAD_LEFT) .
-                            '-' .
-                            str_pad($i, 2, '0', STR_PAD_LEFT);
-                        $reservasDia = $reservasActivas->filter(function ($reserva) use ($fecha) {
-                            return $reserva->fecha_inicio <= $fecha && $reserva->fecha_final >= $fecha;
-                        });
-                    @endphp
-                    {{-- Agregar reervas por dia --}}
-                    <div class="calendar__day">
-                        @if (Auth::user()->role === 'admin')
-                            <a href="{{ route('reservaCal.create', ['fecha' => $fecha]) }}"
-                                class="calendar__date">{{ $i }}</a>
-                        @else
-                            <span class="calendar__date">{{ $i }}</span>
-                        @endif
-
-                        @foreach ($reservasDia as $reserva)
-                            <div class="calendar__task {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
-                                @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
-                                data-reserva-id="{{ $reserva->id }}">
-                                {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i') }} -
-                                {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i') }}
-                            </div>
-                        @endforeach
+                    @foreach ($reservasDia as $reserva)
+                    <div class="calendar__task {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
+                        @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
+                        data-reserva-id="{{ $reserva->id }}">
+                        {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i') }} -
+                        {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i') }}
                     </div>
+                    @endforeach
+                </div>
                 @endfor
-            @else
+                @else
                 <!-- Vista Semanal -->
                 {{-- <div class="calendar calendar-week">
                     @php
@@ -189,57 +191,89 @@
                         <!-- Columna de horas -->
                         <div class="week-grid__hours">
                             @for ($hora = 5; $hora <= 22; $hora++)
-                                <div class="week-grid__hour">{{ str_pad($hora, 2, '0', STR_PAD_LEFT) }}:00</div>
-                            @endfor
-                        </div>
+                                <div class="week-grid__hour">{{ str_pad($hora, 2, '0', STR_PAD_LEFT) }}:00
+    </div>
+    @endfor
+    </div>
 
-                        <!-- Columnas de días -->
-                        @foreach ($diasSemana as $dia)
-                            <div class="week-grid__day">
-                                <div class="week-grid__day-header">
-                                    {{ $dia->format('D') }}<br>
-                                    {{ $dia->format('d') }}
-                                </div>
-                                <div class="week-grid__day-content">
-                                    @php
-                                        $reservasDia = $reservaCals->filter(function ($reserva) use ($dia) {
-                                            return Carbon\Carbon::parse($reserva->fecha_inicio)->format('Y-m-d') <=
-                                                $dia->format('Y-m-d') &&
-                                                Carbon\Carbon::parse($reserva->fecha_final)->format('Y-m-d') >=
-                                                    $dia->format('Y-m-d');
-                                        });
-                                    @endphp
-                                    @foreach ($reservasDia as $reserva)
-                                        @php
-                                            $horaInicio = Carbon\Carbon::parse($reserva->hora_inicio);
-                                            $horaFin = Carbon\Carbon::parse($reserva->hora_fin);
-                                            $top = ($horaInicio->hour - 6) * 60 + $horaInicio->minute;
-                                            $height =
-                                                ($horaFin->hour - $horaInicio->hour) * 60 +
-                                                ($horaFin->minute - $horaInicio->minute);
-                                        @endphp
-                                        <div class="week-grid__event {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
-                                            style="top: {{ $top }}px; height: {{ $height }}px; @if ($reserva->salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"
-                                            data-reserva-id="{{ $reserva->id }}">
-                                            <div class="week-grid__event-content">
-                                                <strong>{{ $horaInicio->format('g:i') }} -
-                                                    {{ $horaFin->format('g:i') }}</strong><br>
-                                                {{ $reserva->actividad }}<br>
-                                                <small>{{ $reserva->salon }}</small>
-                                            </div>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endforeach
+    <!-- Columnas de días -->
+    @foreach ($diasSemana as $dia)
+    <div class="week-grid__day">
+        <div class="week-grid__day-header">
+            {{ $dia->format('D') }}<br>
+            {{ $dia->format('d') }}
+        </div>
+        <div class="week-grid__day-content">
+            @php
+            $reservasDia = $reservaCals->filter(function ($reserva) use ($dia) {
+            return Carbon\Carbon::parse($reserva->fecha_inicio)->format('Y-m-d') <=
+                $dia->format('Y-m-d') &&
+                Carbon\Carbon::parse($reserva->fecha_final)->format('Y-m-d') >=
+                $dia->format('Y-m-d');
+                });
+                @endphp
+                @foreach ($reservasDia as $reserva)
+                @php
+                $horaInicio = Carbon\Carbon::parse($reserva->hora_inicio);
+                $horaFin = Carbon\Carbon::parse($reserva->hora_fin);
+                $top = ($horaInicio->hour - 6) * 60 + $horaInicio->minute;
+                $height =
+                ($horaFin->hour - $horaInicio->hour) * 60 +
+                ($horaFin->minute - $horaInicio->minute);
+                @endphp
+                <div class="week-grid__event {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
+                    style="top: {{ $top }}px; height: {{ $height }}px; @if ($reserva->salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"
+                    data-reserva-id="{{ $reserva->id }}">
+                    <div class="week-grid__event-content">
+                        <strong>{{ $horaInicio->format('g:i') }} -
+                            {{ $horaFin->format('g:i') }}</strong><br>
+                        {{ $reserva->actividad }}<br>
+                        <small>{{ $reserva->salon }}</small>
                     </div>
-                </div>     --}}
-        @endif
+                </div>
+                @endforeach
+        </div>
+    </div>
+    @endforeach
+    </div>
+    </div> --}}
+    @endif
     </div>
 
     <!-- Tabla de eventos cancelados -->
     <div class="container mt-5 text-white">
         <h3>Eventos Cancelados</h3>
+        <form method="GET" action="{{ route('calendario') }}" class="row g-2 align-items-center mb-3">
+        <input type="hidden" name="vista" value="{{ request('vista', 'mensual') }}">
+        <div class="col-auto">
+            <label for="mes_cancelado" class="col-form-label fw-bold">Filtrar por mes:</label>
+        </div>
+        <div class="col-auto">
+            <select name="mes_cancelado" id="mes_cancelado" class="form-select" onchange="this.form.submit()">
+                @php
+                    $mesActual = request('mes_cancelado', now()->format('m'));
+                    $meses = [
+                        '01' => 'Enero',
+                        '02' => 'Febrero',
+                        '03' => 'Marzo',
+                        '04' => 'Abril',
+                        '05' => 'Mayo',
+                        '06' => 'Junio',
+                        '07' => 'Julio',
+                        '08' => 'Agosto',
+                        '09' => 'Septiembre',
+                        '10' => 'Octubre',
+                        '11' => 'Noviembre',
+                        '12' => 'Diciembre',
+                    ];
+                @endphp
+                <option value="">Todos</option>
+                @foreach ($meses as $num => $nombre)
+                    <option value="{{ $num }}" {{ $mesActual == $num ? 'selected' : '' }}>{{ $nombre }}</option>
+                @endforeach
+            </select>
+        </div>
+    </form>
         <table class="table table-striped text-white">
             <thead>
                 <tr>
@@ -252,15 +286,28 @@
             </thead>
             <tbody>
                 @foreach ($reservasCanceladas as $cancelada)
-                    <tr class="text-white">
-                        <td>{{ $cancelada->numero_evento }}</td>
-                        <td>{{ $cancelada->actividad }}</td>
-                        <td>{{ \Carbon\Carbon::parse($cancelada->fecha_inicio)->format('d/m/Y') }} -
-                            {{ \Carbon\Carbon::parse($cancelada->fecha_final)->format('d/m/Y') }}</td>
-                        <td>{{ \Carbon\Carbon::parse($cancelada->hora_inicio)->format('g:i A') }} -
-                            {{ \Carbon\Carbon::parse($cancelada->hora_fin)->format('g:i A') }}</td>
-                        <td>{{ $cancelada->salon }}</td>
-                    </tr>
+                <tr class="text-white">
+                    <td>{{ $cancelada->numero_evento }}</td>
+                    <td>{{ $cancelada->actividad }}</td>
+                    <td>{{ \Carbon\Carbon::parse($cancelada->fecha_inicio)->format('d/m/Y') }} -
+                        {{ \Carbon\Carbon::parse($cancelada->fecha_final)->format('d/m/Y') }}
+                    </td>
+                    <td>{{ \Carbon\Carbon::parse($cancelada->hora_inicio)->format('g:i A') }} -
+                        {{ \Carbon\Carbon::parse($cancelada->hora_fin)->format('g:i A') }}
+                    </td>
+                    <td class="{{ [
+                            'Auditorio Jorge L. Quijada' => 'text-white',
+                            'Trabajo en Equipo' => 'bg-success text-white',
+                            'Comunicación Asertiva' => 'bg-info text-white',
+                            'Servicio al Cliente' => 'bg-warning text-center',
+                            'Integridad' => 'bg-danger text-white',
+                            'Creatividad Innovadora' => 'bg-primary text-center',
+                            'Externo' => 'bg-dark text-white'
+                            ][$cancelada->salon] ?? '' }}"
+                        @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                        {{ $cancelada->salon }}
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table>
@@ -285,7 +332,7 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Fecha:</strong> <span id="modalFecha"></span></p>
+                            <!-- <p><strong>Fecha:</strong> <span id="modalFecha"></span></p> -->
                             <p><strong>Horario:</strong> <span id="modalHorario"></span></p>
                             <p><strong>Actividad:</strong> <span id="modalActividad"></span></p>
                             <p><strong>Analista:</strong> <span id="modalAnalista"></span></p>
@@ -334,7 +381,7 @@
                 // Actualizar el contenido del modal
                 document.getElementById('modalSalon').textContent = reserva.salon;
                 document.getElementById('modalColorSalon').className = coloresSalones[reserva.salon] || 'bg-light';
-                document.getElementById('modalFecha').textContent = fecha;
+                // document.getElementById('modalFecha').textContent = fecha;
                 document.getElementById('modalHorario').textContent =
                     `${moment(reserva.hora_inicio, 'HH:mm:ss').format('h:mm')} - ${moment(reserva.hora_fin, 'HH:mm:ss').format('h:mm')}`;
                 document.getElementById('modalActividad').textContent = reserva.actividad;

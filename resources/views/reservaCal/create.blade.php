@@ -18,13 +18,13 @@
             </div>
             <div class="card-body">
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
 
                 <form action="{{ route('reservaCal.store') }}" method="POST" id="reservaForm">
@@ -74,6 +74,7 @@
                                                 <option value="Integridad">Integridad</option>
                                                 <option value="Creatividad Innovadora">Creatividad Innovadora</option>
                                                 <option value="Externo">Externo</option>
+                                                <option value="Campus Virtual">Campus Virtual</option>
                                             </select>
                                         </div>
                                     </div>
@@ -125,8 +126,8 @@
                                     </div>
 
                                     @php
-                                        $mesActual = \Carbon\Carbon::now()->locale('es')->monthName; // Obtiene el mes actual en español
-                                        $mesActual = ucfirst($mesActual); // Primera letra en mayúscula para que coincida con las opciones
+                                    $mesActual = \Carbon\Carbon::now()->locale('es')->monthName; // Obtiene el mes actual en español
+                                    $mesActual = ucfirst($mesActual); // Primera letra en mayúscula para que coincida con las opciones
                                     @endphp
 
                                     <div class="mb-3">
@@ -138,17 +139,17 @@
                                                     {{ old('mes', $mes ?? '') == '' ? 'selected' : '' }}>Selecciona un
                                                     mes</option>
                                                 @foreach (['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $mes)
-                                                    <option value="{{ $mes }}"
-                                                        {{ old('mes', $mesActual) == $mes ? 'selected' : '' }}>
-                                                        {{ $mes }}
-                                                    </option>
+                                                <option value="{{ $mes }}"
+                                                    {{ old('mes', $mesActual) == $mes ? 'selected' : '' }}>
+                                                    {{ $mes }}
+                                                </option>
                                                 @endforeach
                                             </select>
                                         </div>
                                     </div>
 
                                     @php
-                                        $fechaInicio = request('fecha'); // Captura la fecha pasada en la URL
+                                    $fechaInicio = request('fecha'); // Captura la fecha pasada en la URL
                                     @endphp
 
                                     <div class="mb-3">
@@ -172,9 +173,10 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-chalkboard-teacher"></i></span>
                                             <select name="modalidad" id="modalidad" class="form-select" required>
-                                                <option value="" disabled {{ old('modalidad') == '' ? 'selected' : '' }}>Seleccione modalidad</option>
-                                                <option value="Presencial" {{ old('modalidad') == 'Presencial' ? 'selected' : '' }}>Presencial</option>
-                                                <option value="Virtual" {{ old('modalidad') == 'Virtual' ? 'selected' : '' }}>Virtual</option>
+                                                <option value="" disabled>Seleccione modalidad</option>
+                                                <option value="Presencial">Presencial</option>
+                                                <option value="Virtual">Virtual</option>
+                                                <option value="Mixto">Mixto</option>
                                             </select>
                                         </div>
                                     </div>
@@ -298,17 +300,29 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <select class="form-select" name="asistencia_tecnica">
-                                                <option value="Si">Si</option>
-                                                <option value="No">No</option>
+                                                <option value="" disabled selected>Seleccion</option>
+                                                <option value="Autoridades Superiores">Autoridades Superiores</option>
+                                                <option value="Transmision en Vivo">Transmision en Vivo</option>
+                                                <option value="Asistencia General">Asistencia General</option>
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="analista" class="form-label">Analista</label>
+                                        <label class="form-label">Analista</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="text" class="form-control" name="analista" required>
+                                            <span class="input-group-text"><i class="fas fa-tools"></i></span>
+                                            <select class="form-select" name="analista">
+                                                <option value="" disabled selected>Seleccion</option>
+                                                <option value="Anabel Santana">Anabel Santana</option>
+                                                <option value="Eva Ortega">Eva Ortega</option>
+                                                <option value="Helvetia Bernal">Helvetia Bernal</option>
+                                                <option value="Liseth Rodriguez">Liseth Rodriguez</option>
+                                                <option value="Melanie Taylor">Melanie Taylor</option>
+                                                <option value="Veronica de Ureña">Veronica de Ureña</option>
+                                                <option value="Walter Lizondro">Walter Lizondro</option>
+                                                <option value="Yesenia Delgado">Yesenia Delgado</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -370,7 +384,7 @@
         });
 
         // Cambiar subtipo de actividad según el tipo seleccionado
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const tipoActividad = document.getElementById('tipo_actividad');
             const subtipoActividad = document.getElementById('subtipo_actividad');
 
@@ -380,7 +394,7 @@
                 Reunion: ['Ninguno'] // Puede ser vacío o "Ninguno"
             };
 
-            tipoActividad.addEventListener('change', function () {
+            tipoActividad.addEventListener('change', function() {
                 const seleccion = this.value;
                 const subtipos = opciones[seleccion] || [];
 
@@ -388,13 +402,40 @@
                 subtipoActividad.innerHTML = '<option value="">Seleccione subtipo</option>';
 
                 // Insertar nuevas opciones
-                subtipos.forEach(function (sub) {
+                subtipos.forEach(function(sub) {
                     const option = document.createElement('option');
                     option.value = sub;
                     option.textContent = sub;
                     subtipoActividad.appendChild(option);
                 });
             });
+        });
+        // Validar cantidad de participantes según el salón seleccionado
+        document.addEventListener('DOMContentLoaded', function() {
+            const salonSelect = document.querySelector('select[name="salon"]');
+            const participantesInput = document.querySelector('input[name="cant_participantes"]');
+
+            const limites = {
+                'Auditorio Jorge L. Quijada': 100,
+                'Integridad': 20,
+                'Servicio al Cliente': 30,
+                'Comunicación Asertiva': 40,
+                'Trabajo en Equipo': 30,
+                'Creatividad Innovadora': 10
+            };
+
+            function validarParticipantes() {
+                const salon = salonSelect.value;
+                const limite = limites[salon];
+                const valor = parseInt(participantesInput.value, 10);
+                if (limite && valor > limite) {
+                    alert(`El salón "${salon}" tiene un límite de ${limite} participantes.`);
+                    participantesInput.value = '';
+                }
+            }
+
+            salonSelect.addEventListener('change', validarParticipantes);
+            participantesInput.addEventListener('input', validarParticipantes);
         });
     </script>
 </body>

@@ -1,0 +1,9 @@
+
+2- Agregar campo: Modalidad: Presencial, Virtual, Mixto.(AGREGAR MIXTO)
+3- Modificar campo: Asistencia tecnica ???????????.
+4- Agregar limite de personas por salon.
+5- Agregar Vista en la tabla del Dept. Virtual.
+8- Agregar el boton de editar en el modadl del calendario.(SIN PODER ) 
+
+IP local: http://192.122.164.200:8000
+MI IP: 172.16.240.5

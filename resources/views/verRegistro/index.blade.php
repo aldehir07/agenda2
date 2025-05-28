@@ -36,6 +36,7 @@
                     <option value="general">Vista General</option>
                     <option value="soporte">Soporte Técnico</option>
                     <option value="insumos">Insumos</option>
+                    <option value="virtual">Virtual</option>
                 </select>
             </div>
 
@@ -47,22 +48,22 @@
                                 {{-- <th scope="col" data-column="id">ID</th>
                                 <th scope="col" data-column="created_at">F. Crear</th> --}}
                                 <th scope="col" data-column="salon">Salón</th>
+                                <th scope="col" data-column="fecha_inicio">Inicio</th>
+                                <th scope="col" data-column="fecha_final">Final</th>
                                 <th scope="col" data-column="duracion">Duración</th>
-                                <th scope="col" data-column="actividad">Actividad</th>
+                                <th scope="col" data-column="receso_am">Receso AM</th>
+                                <th scope="col" data-column="receso_pm">Receso PM</th>
                                 <th scope="col" data-column="analista">Analista</th>
+                                <th scope="col" data-column="estatus">Estatus</th>
+                                <th scope="col" data-column="cant_participantes">Participantes</th>
+                                <th scope="col" data-column="actividad">Actividad</th>
                                 <th scope="col" data-column="depto_responsable">Depto.</th>
                                 <th scope="col" data-column="numero_evento">N° Evento</th>
                                 <th scope="col" data-column="scafid">Scafid</th>
                                 <th scope="col" data-column="mes">Mes</th>
-                                <th scope="col" data-column="hora_inicio">Inicio</th>
-                                <th scope="col" data-column="hora_fin">Final</th>
                                 <th scope="col" data-column="tipo_actividad">Tipo</th>
                                 <th scope="col" data-column="subtipo_actividad">Subtipo</th>
-                                <th scope="col" data-column="receso_am">Receso AM</th>
-                                <th scope="col" data-column="receso_pm">Receso PM</th>
                                 <th scope="col" data-column="publico_meta">Publico Meta</th>
-                                <th scope="col" data-column="cant_participantes">Participantes</th>
-                                <th scope="col" data-column="estatus">Estatus</th>
                                 <th scope="col" data-column="requisitos_tecnicos">Requisitos</th>
                                 <th scope="col" data-column="insumos">Insumos</th>
                                 <th scope="col" data-column="acciones">Acciones</th>
@@ -82,20 +83,12 @@
                                     'Creatividad Innovadora' => 'bg-primary text-white',
                                     'Externo' => 'bg-dark text-white'
                                 ][$reserva->salon] ?? '' }}" @if($reserva->salon=='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>{{ $reserva->salon }}</td>
+                                <td data-column="fecha_inicio">{{ \Carbon\Carbon::parse($reserva->fecha_inicio)->format('d/m/Y') }}</td>
+                                <td data-column="fecha_final">{{ \Carbon\Carbon::parse($reserva->fecha_final)->format('d/m/Y') }}</td>
                                 <td data-column="duracion">
                                     {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i A') }} -
                                     {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i A') }}
                                 </td>
-                                <td data-column="actividad">{{ $reserva->actividad }}</td>
-                                <td data-column="analista">{{ $reserva->analista }}</td>
-                                <td data-column="depto_responsable">{{ $reserva->depto_responsable }}</td>
-                                <td data-column="numero_evento">{{ $reserva->numero_evento }}</td>
-                                <td data-column="scafid">{{ $reserva->scafid }}</td>
-                                <td data-column="mes">{{ $reserva->mes }}</td>
-                                <td data-column="fecha_inicio">{{ \Carbon\Carbon::parse($reserva->fecha_inicio)->format('d/m/Y') }}</td>
-                                <td data-column="fecha_final">{{ \Carbon\Carbon::parse($reserva->fecha_final)->format('d/m/Y') }}</td>
-                                <td data-column="tipo_actividad">{{ $reserva->tipo_actividad }}</td>
-                                <td data-column="subtipo_actividad">{{ $reserva->subtipo_actividad ?? 'N/A' }}</td>
                                 <td data-column="receso_am">
                                     @if($reserva->receso_am)
                                         {{ \Carbon\Carbon::parse($reserva->receso_am)->format('g:i A') }}
@@ -112,8 +105,7 @@
                                         N/A
                                     @endif
                                 </td>
-                                <td data-column="publico_meta">{{ $reserva->publico_meta }}</td>
-                                <td data-column="cant_participantes">{{ $reserva->cant_participantes }}</td>
+                                <td data-column="analista">{{ $reserva->analista }}</td>
                                 <td data-column="estatus">
                                     @php
                                         $estatusClass = [
@@ -136,6 +128,15 @@
                                         {{ $reserva->estatus }}
                                     </span>
                                 </td>
+                                <td data-column="cant_participantes">{{ $reserva->cant_participantes }}</td>
+                                <td data-column="actividad">{{ $reserva->actividad }}</td>
+                                <td data-column="depto_responsable">{{ $reserva->depto_responsable }}</td>
+                                <td data-column="numero_evento">{{ $reserva->numero_evento }}</td>
+                                <td data-column="scafid">{{ $reserva->scafid }}</td>
+                                <td data-column="mes">{{ $reserva->mes }}</td>
+                                <td data-column="tipo_actividad">{{ $reserva->tipo_actividad }}</td>
+                                <td data-column="subtipo_actividad">{{ $reserva->subtipo_actividad ?? 'N/A' }}</td>
+                                <td data-column="publico_meta">{{ $reserva->publico_meta }}</td>
                                 <td data-column="requisitos_tecnicos">{{ $reserva->requisitos_tecnicos }}</td>
                                 <td data-column="insumos">{{ $reserva->insumos }}</td>
                                 <td data-column="acciones">
@@ -191,13 +192,18 @@
             if (selectedView === "general") {
                 allColumns.forEach(col => col.style.display = "table-cell"); // Mostrar todo
             } else if (selectedView === "soporte") {
-                let soporteColumns = ["salon", "inicio", "final", "actividad", "duracion", "analista", "estatus", "requisitos_tecnicos", "asistencia"];
+                let soporteColumns = ["salon", "fecha_inicio", "fecha_final", "actividad", "duracion", "analista", "estatus", "requisitos_tecnicos", "asistencia"];
                 soporteColumns.forEach(col => {
                     document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
                 });
             } else if (selectedView === "insumos") {
-                let insumosColumns = ["salon", "inicio", "final", "actividad", "duracion", "estatus", "receso_am", "receso_pm", "cant_participantes", "analista", "insumos"];
+                let insumosColumns = ["salon", "fecha_inicio", "fecha_final", "actividad", "duracion", "estatus", "receso_am", "receso_pm", "cant_participantes", "analista", "insumos"];
                 insumosColumns.forEach(col => {
+                    document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
+                });
+            } else if (selectedView === "virtual") {
+                let soporteColumns = ["fecha_inicio", "fecha_final", "actividad", "numero_evento", "scafid", "duracion", "analista", "estatus" ];
+                soporteColumns.forEach(col => {
                     document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
                 });
             }

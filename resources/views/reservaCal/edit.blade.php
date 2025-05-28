@@ -18,13 +18,13 @@
             </div>
             <div class="card-body">
                 @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="alert alert-danger">
+                    <ul class="mb-0">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
 
                 <form action="{{ route('reservaCal.update', $reservaCal->id) }}" method="POST" id="reservaForm">
@@ -94,6 +94,9 @@
                                                 <option value="Externo"
                                                     {{ $reservaCal->salon == 'Externo' ? 'selected' : '' }}>
                                                     Externo</option>
+                                                <option value="Campus Virtual"
+                                                    {{ $reservaCal->salon == 'Campus Virtual' ? 'selected' : '' }}>
+                                                    Campus Virtual</option>
                                             </select>
                                         </div>
                                     </div>
@@ -217,10 +220,13 @@
                                             <select name="modalidad" id="modalidad" class="form-select" required>
                                                 <option value="" disabled>Seleccione modalidad</option>
                                                 <option value="Presencial"
-                                                    {{ old('modalidad') == 'Presencial' ? 'selected' : '' }}>Presencial
+                                                    {{ old('modalidad', $reservaCal->modalidad) == 'Presencial' ? 'selected' : '' }}>Presencial
                                                 </option>
                                                 <option value="Virtual"
-                                                    {{ old('modalidad') == 'Virtual' ? 'selected' : '' }}>Virtual
+                                                    {{ old('modalidad', $reservaCal->modalidad) == 'Virtual' ? 'selected' : '' }}>Virtual
+                                                </option>
+                                                <option value="Mixto" 
+                                                    {{ old('modalidad', $reservaCal->modalidad) == 'Mixto' ? 'selected' : '' }}>Mixto
                                                 </option>
                                             </select>
                                         </div>
@@ -350,16 +356,16 @@
                                             <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
                                             <select class="form-select" name="estatus">
                                                 <option value="Programado"
-                                                    {{ $reservaCal->estatus == 'Programado' ? 'selected' : '' }}>
+                                                    {{ old('estatus', $reservaCal->estatus) == 'Programado' ? 'selected' : '' }}>
                                                     Programado</option>
                                                 <option value="Cancelado"
-                                                    {{ $reservaCal->estatus == 'Cancelado' ? 'selected' : '' }}>
+                                                    {{ old('estatus', $reservaCal->estatus) == 'Cancelado' ? 'selected' : '' }}>
                                                     Cancelado</option>
                                                 <option value="Realizado"
-                                                    {{ $reservaCal->estatus == 'Realizado' ? 'selected' : '' }}>
+                                                    {{ old('estatus', $reservaCal->estatus) == 'Realizado' ? 'selected' : '' }}>
                                                     Realizado</option>
                                                 <option value="Reprogramado"
-                                                    {{ $reservaCal->estatus == 'Reprogramado' ? 'selected' : '' }}>
+                                                    {{ old('estatus', $reservaCal->estatus) == 'Reprogramado' ? 'selected' : '' }}>
                                                     Reprogramado</option>
                                             </select>
                                         </div>
@@ -370,19 +376,32 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <select class="form-select" name="asistencia_tecnica">
-                                                <option value="Si" {{ $reservaCal->asistencia_tecnica == 'Si' }}>
-                                                    Si</option>
-                                                <option value="No">No</option>
+                                                <option value="Autoridades Superiores" {{ old('asistencia_tecnica', $reservaCal->asistencia_tecnica) == 'Autoridades Superiore' ? 'selected' : ''}}>
+                                                    Autoridades Superiore</option>
+                                                <option value="Transmision en Vivo" {{ old('asistencia_tecnica', $reservaCal->asistencia_tecnica) == 'Transmision en Vivo' ? 'selected' : ''}}>
+                                                    Transmision en Vivo</option>
+                                                <option value="Asistencia General" {{ old('asistencia_tecnica', $reservaCal->asistencia_tecnica) == 'Asistencia General' ? 'selected' : ''}}>
+                                                    Asistencia General</option>
+
                                             </select>
                                         </div>
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="analista" class="form-label">Analista</label>
+                                        <label class="form-label">Analista</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                                            <input type="text" class="form-control" name="analista"
-                                                value="{{ old('analista', $reservaCal->analista) }}" required>
+                                            <span class="input-group-text"><i class="fas fa-tools"></i></span>
+                                            <select class="form-select" name="analista">
+                                                <option value="" disabled selected>Seleccion</option>
+                                                <option value="Anabel Santana" {{ old('analista', $reservaCal->analista) == 'Anabel Santana' ? 'selected' : '' }}>Anabel Santana</option>
+                                                <option value="Eva Ortega" {{ old('analista', $reservaCal->analista) == 'Eva Ortega' ? 'selectted' : '' }}>Eva Ortega</option>
+                                                <option value="Helvetia Bernal" {{ old('analista', $reservaCal->analista) == 'Helvetia Bernal' ? 'selected' : '' }}>Helvetia Bernal</option>
+                                                <option value="Liseth Rodriguez" {{ old('analista', $reservaCal->analista) == 'Liseth Rodriguez' ? 'selected' : '' }}>Liseth Rodriguez</option>
+                                                <option value="Melanie Taylor" {{ old('analista', $reservaCal->analista) == 'Melanie Taylor' ? 'selected' : '' }}>Melanie Taylor</option>
+                                                <option value="Veronica de Ureña" {{ old('analista', $reservaCal->analista) == 'Veronica de Ureña' ? 'selected' : '' }}>Veronica de Ureña</option>
+                                                <option value="Walter Lizondro" {{ old('analista', $reservaCal->analista) == 'Walter Lizondro' ? 'selected' : '' }}>Walter Lizondro</option>
+                                                <option value="Yesenia Delgado" {{ old('analista', $reservaCal->analista) == 'Yesenia Delgado' ? 'selected' : '' }}>Yesenia Delgado</option>
+                                            </select>
                                         </div>
                                     </div>
                                 </div>
@@ -488,6 +507,34 @@
             if (tipoSeleccionado) {
                 cargarSubtipos(tipoSeleccionado);
             }
+        });
+
+        // Validación de cantidad de participantes según el salón
+        document.addEventListener('DOMContentLoaded', function() {
+            const salonSelect = document.querySelector('select[name="salon"]');
+            const participantesInput = document.querySelector('input[name="cant_participantes"]');
+
+            const limites = {
+                'Auditorio Jorge L. Quijada': 100,
+                'Integridad': 20,
+                'Servicio al Cliente': 30,
+                'Comunicación Asertiva': 40,
+                'Trabajo en Equipo': 30,
+                'Creatividad Innovadora': 10
+            };
+
+            function validarParticipantes() {
+                const salon = salonSelect.value;
+                const limite = limites[salon];
+                const valor = parseInt(participantesInput.value, 10);
+                if (limite && valor > limite) {
+                    alert(`El salón "${salon}" tiene un límite de ${limite} participantes.`);
+                    participantesInput.value = '';
+                }
+            }
+
+            salonSelect.addEventListener('change', validarParticipantes);
+            participantesInput.addEventListener('input', validarParticipantes);
         });
     </script>
 </body>
