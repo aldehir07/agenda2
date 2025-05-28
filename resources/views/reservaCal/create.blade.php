@@ -83,7 +83,7 @@
                                         <label for="actividad" class="form-label">Actividad</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tasks"></i></span>
-                                            <input type="text" class="form-control" name="actividad" required>
+                                            <input type="text" class="form-control" name="actividad" value="{{ old('actividad') }}" required>
                                         </div>
                                     </div>
 
@@ -93,8 +93,7 @@
                                                 <label for="hora_inicio" class="form-label">Hora Inicio</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <input type="time" class="form-control" name="hora_inicio"
-                                                        required>
+                                                    <input type="time" class="form-control" name="hora_inicio" value="{{ old('hora_inicio') }}" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -103,7 +102,7 @@
                                                 <label for="hora_fin" class="form-label">Hora Fin</label>
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i class="fas fa-clock"></i></span>
-                                                    <input type="time" class="form-control" name="hora_fin" required>
+                                                    <input type="time" class="form-control" name="hora_fin" value="{{ old('hora_fin') }}" required>
                                                 </div>
                                             </div>
                                         </div>
@@ -113,7 +112,7 @@
                                         <label class="form-label">Numero Evento</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                            <input type="number" name="numero_evento" class="form-control" required>
+                                            <input type="number" name="numero_evento" class="form-control" value="{{ old('numero_evento') }}" required>
                                         </div>
                                     </div>
 
@@ -121,7 +120,7 @@
                                         <label class="form-label">Scafid</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-id-card"></i></span>
-                                            <input class="form-control" type="text" name="scafid">
+                                            <input class="form-control" type="text" name="scafid" value="{{ old('scafid') }}">
                                         </div>
                                     </div>
 
@@ -134,13 +133,11 @@
                                         <label class="form-label">Mes</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                            <select class="form-select" name="mes" required>
-                                                <option value="" disabled
-                                                    {{ old('mes', $mes ?? '') == '' ? 'selected' : '' }}>Selecciona un
-                                                    mes</option>
+                                            <select class="form-select" name="mes" id="mes" required>
+                                                <option value="" disabled {{ old('mes') == '' ? 'selected' : '' }}>Selecciona un mes</option>
                                                 @foreach (['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $mes)
                                                 <option value="{{ $mes }}"
-                                                    {{ old('mes', $mesActual) == $mes ? 'selected' : '' }}>
+                                                    {{ old('mes') == $mes ? 'selected' : '' }}>
                                                     {{ $mes }}
                                                 </option>
                                                 @endforeach
@@ -149,7 +146,7 @@
                                     </div>
 
                                     @php
-                                    $fechaInicio = request('fecha'); // Captura la fecha pasada en la URL
+                                        $fechaInicio = old('fecha_inicio', \Carbon\Carbon::now()->format('Y-m-d'));
                                     @endphp
 
                                     <div class="mb-3">
@@ -159,15 +156,19 @@
                                             required>
                                     </div>
 
-
                                     <div class="mb-3">
                                         <label class="form-label">Fecha Final</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i
-                                                    class="fas fa-calendar-minus"></i></span>
-                                            <input class="form-control" type="date" name="fecha_final" required>
+                                            <span class="input-group-text"><i class="fas fa-calendar-minus"></i></span>
+                                            <input class="form-control @error('fecha_final') is-invalid @enderror"
+                                                type="date" name="fecha_final"
+                                                value="{{ old('fecha_final') }}" required>
+                                            @error('fecha_final')
+                                            <div class="invalid-feedback d-block">{{ $message }}</div>
+                                            @enderror
                                         </div>
                                     </div>
+
                                     <div class="mb-3">
                                         <label for="modalidad" class="form-label">Modalidad</label>
                                         <div class="input-group">
@@ -198,7 +199,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i
                                                             class="fas fa-coffee"></i></span>
-                                                    <input type="time" class="form-control" name="receso_am">
+                                                    <input type="time" class="form-control" name="receso_am" value="{{ old('receso_am') }}">
                                                     <span class="input-group-text">15 min</span>
                                                 </div>
                                             </div>
@@ -209,7 +210,7 @@
                                                 <div class="input-group">
                                                     <span class="input-group-text"><i
                                                             class="fas fa-coffee"></i></span>
-                                                    <input type="time" class="form-control" name="receso_pm">
+                                                    <input type="time" class="form-control" name="receso_pm" value="{{ old('receso_pm') }}">
                                                     <span class="input-group-text">15 min</span>
                                                 </div>
                                             </div>
@@ -243,7 +244,7 @@
                                             Participantes</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                            <input type="number" class="form-control" name="cant_participantes"
+                                            <input type="number" class="form-control" name="cant_participantes" value="{{ old('cant_participantes') }}"
                                                 required min="1">
                                         </div>
                                     </div>
@@ -253,7 +254,7 @@
                                             Técnicos</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
-                                            <textarea class="form-control" name="requisitos_tecnicos" rows="2"></textarea>
+                                            <textarea class="form-control" name="requisitos_tecnicos" rows="2" value="{{ old('requisitos_tecnicos') }}"></textarea>
                                         </div>
                                     </div>
 
@@ -261,7 +262,7 @@
                                         <label for="insumos" class="form-label">Insumos Requeridos</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-box"></i></span>
-                                            <textarea class="form-control" name="insumos" rows="2"></textarea>
+                                            <textarea class="form-control" name="insumos" rows="2" value="{{ old('insumos') }}"></textarea>
                                         </div>
                                     </div>
 
@@ -269,7 +270,7 @@
                                         <label class="form-label">Público Meta</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-users"></i></span>
-                                            <input class="form-control" type="text" name="publico_meta" required>
+                                            <input class="form-control" type="text" name="publico_meta" value="{{ old('publico_meta') }}" required>
                                         </div>
                                     </div>
 
@@ -277,7 +278,7 @@
                                         <label class="form-label">Facilitador o Moderador</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
-                                            <input class="form-control" type="text" name="facilitador_moderador"
+                                            <input class="form-control" type="text" name="facilitador_moderador" value="{{ old('facilitador_moderador') }}"
                                                 required>
                                         </div>
                                     </div>
@@ -300,7 +301,7 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <select class="form-select" name="asistencia_tecnica">
-                                                <option value="" disabled selected>Seleccion</option>
+                                                <option value="" disabled>Seleccion una opcion</option>
                                                 <option value="Autoridades Superiores">Autoridades Superiores</option>
                                                 <option value="Transmision en Vivo">Transmision en Vivo</option>
                                                 <option value="Asistencia General">Asistencia General</option>
@@ -311,7 +312,7 @@
                                     <div class="mb-3">
                                         <label class="form-label">Analista</label>
                                         <div class="input-group">
-                                            <span class="input-group-text"><i class="fas fa-tools"></i></span>
+                                            <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                             <select class="form-select" name="analista">
                                                 <option value="" disabled selected>Seleccion</option>
                                                 <option value="Anabel Santana">Anabel Santana</option>
@@ -399,15 +400,30 @@
                 const subtipos = opciones[seleccion] || [];
 
                 // Limpiar opciones actuales
-                subtipoActividad.innerHTML = '<option value="">Seleccione subtipo</option>';
+                subtipoActividad.innerHTML = '';
 
-                // Insertar nuevas opciones
-                subtipos.forEach(function(sub) {
+                if (seleccion === 'Reunion') {
+                    // Solo opción "Ninguno" y seleccionada automáticamente
                     const option = document.createElement('option');
-                    option.value = sub;
-                    option.textContent = sub;
+                    option.value = 'Ninguno';
+                    option.textContent = 'Ninguno';
+                    option.selected = true;
                     subtipoActividad.appendChild(option);
-                });
+                } else {
+                    // Opción por defecto
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Seleccione subtipo';
+                    subtipoActividad.appendChild(defaultOption);
+
+                    // Insertar nuevas opciones
+                    subtipos.forEach(function(sub) {
+                        const option = document.createElement('option');
+                        option.value = sub;
+                        option.textContent = sub;
+                        subtipoActividad.appendChild(option);
+                    });
+                }
             });
         });
         // Validar cantidad de participantes según el salón seleccionado
@@ -436,6 +452,28 @@
 
             salonSelect.addEventListener('change', validarParticipantes);
             participantesInput.addEventListener('input', validarParticipantes);
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const fechaInput = document.getElementById('fecha_inicio');
+            const mesSelect = document.getElementById('mes');
+            const meses = [
+                'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+                'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+            ];
+
+            function setMesFromFecha() {
+                if (fechaInput.value) {
+                    const mesIndex = new Date(fechaInput.value).getMonth();
+                    mesSelect.value = meses[mesIndex];
+                }
+            }
+
+            // Al cargar la página, si hay fecha, selecciona el mes correcto
+            setMesFromFecha();
+
+            // Cuando el usuario cambie la fecha, actualiza el mes
+            fechaInput.addEventListener('change', setMesFromFecha);
         });
     </script>
 </body>

@@ -66,6 +66,7 @@
                                 <th scope="col" data-column="publico_meta">Publico Meta</th>
                                 <th scope="col" data-column="requisitos_tecnicos">Requisitos</th>
                                 <th scope="col" data-column="insumos">Insumos</th>
+                                <th scope="col" data-column="asistencia_tecnica">asistencia_tecnica</th>
                                 <th scope="col" data-column="acciones">Acciones</th>
                             </tr>
                         </thead>
@@ -133,12 +134,15 @@
                                 <td data-column="depto_responsable">{{ $reserva->depto_responsable }}</td>
                                 <td data-column="numero_evento">{{ $reserva->numero_evento }}</td>
                                 <td data-column="scafid">{{ $reserva->scafid }}</td>
-                                <td data-column="mes">{{ $reserva->mes }}</td>
+                                <td data-column="mes">
+                                    {{ \Carbon\Carbon::parse($reserva->fecha_inicio)->locale('es')->isoFormat('MMMM') }}
+                                </td>
                                 <td data-column="tipo_actividad">{{ $reserva->tipo_actividad }}</td>
                                 <td data-column="subtipo_actividad">{{ $reserva->subtipo_actividad ?? 'N/A' }}</td>
                                 <td data-column="publico_meta">{{ $reserva->publico_meta }}</td>
                                 <td data-column="requisitos_tecnicos">{{ $reserva->requisitos_tecnicos }}</td>
                                 <td data-column="insumos">{{ $reserva->insumos }}</td>
+                                <td data-column="asistencia_tecnica">{{ $reserva->asistencia_tecnica }}</td>
                                 <td data-column="acciones">
                                     @if(Auth::user()->role === 'admin')
                                         <a href="{{ route('reservaCal.edit', $reserva->id) }}" class="btn btn-sm btn-warning">

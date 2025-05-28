@@ -1,9 +1,12 @@
-
+1- Agregar Campus Virtual como salon.
 2- Agregar campo: Modalidad: Presencial, Virtual, Mixto.(AGREGAR MIXTO)
-3- Modificar campo: Asistencia tecnica ???????????.
+3- Modificar campo: Asistencia tecnica
+    -Autoridades Superiores
+    -Transmision en Vivo
+    -Asistencia General.
 4- Agregar limite de personas por salon.
-5- Agregar Vista en la tabla del Dept. Virtual.
-8- Agregar el boton de editar en el modadl del calendario.(SIN PODER ) 
+5- Agregar que la tabla eventos cancelados filtre solo el mes actual.
+5- Agregar el boton de editar en el modadl del calendario.(SIN PODER ) 
 
 IP local: http://192.122.164.200:8000
 MI IP: 172.16.240.5

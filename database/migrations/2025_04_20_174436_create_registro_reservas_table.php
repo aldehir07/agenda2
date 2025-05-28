@@ -17,7 +17,10 @@ return new class extends Migration
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->string('salon');
-            $table->string('analista');
+            $table->enum('analista', ['Anabel Santana', 'Eva Ortega', 
+                        'Helvetia Bernal', 'Liseth Rodriguez', 'Melanie Taylor', 
+                        'Veronica de Ureña', 'Walter Lizondro', 'Yesenia Delgado'
+                    ]);
             $table->text('actividad');
             $table->string('depto_responsable');
             $table->string('numero_evento', 10)->unique();
@@ -27,7 +30,7 @@ return new class extends Migration
             $table->date('fecha_final');
             $table->enum('tipo_actividad', ['Reunion', 'Capacitacion', 'REPLICA']);
             $table->enum('subtipo_actividad', ['Seminario', 'Taller', 'Conferencia', 'Seminario/Taller', 'Ninguno']);
-            $table->enum('modalidad', ['Presencial', 'Virtual']);
+            $table->enum('modalidad', ['Presencial', 'Virtual', 'Mixto']);
             $table->time('receso_am')->nullable();
             $table->time('receso_pm')->nullable();
             $table->string('publico_meta');
@@ -36,7 +39,7 @@ return new class extends Migration
             $table->enum('estatus', ['Programado', 'Cancelado', 'Realizado', 'Reprogramado']);
             $table->text('insumos')->nullable();
             $table->text('requisitos_tecnicos')->nullable();
-            $table->enum('asistencia_tecnica', ['Si', 'No']);
+            $table->enum('asistencia_tecnica', ['Autoridades Superiores', 'Transmision en Vivo', 'Asistencia General']);
             $table->timestamps();
         });
     }

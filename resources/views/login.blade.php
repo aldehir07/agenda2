@@ -40,7 +40,7 @@
 
                             <div class="form-floating mb-3">
                                 <input type="password" class="form-control" id="password"
-                                    name="password" placeholder="Contraseña" required>
+                                    name="password" required>
                                 <label for="password">Contraseña</label>
                             </div>
 

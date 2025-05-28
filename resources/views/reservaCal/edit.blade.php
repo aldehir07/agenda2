@@ -314,12 +314,10 @@
                                     </div>
 
                                     <div class="mb-3">
-                                        <label for="requisitos_tecnicos" class="form-label">Requisitos
-                                            Técnicos</label>
+                                        <label for="requisitos_tecnicos" class="form-label">Requisitos Técnicos</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
-                                            <textarea class="form-control" name="requisitos_tecnicos"
-                                                value="{{ old('requisitos_tecnicos', $reservaCal->requisitos_tecnicos) }}" rows="2"></textarea>
+                                            <textarea class="form-control" name="requisitos_tecnicos" rows="2">{{ old('requisitos_tecnicos', $reservaCal->requisitos_tecnicos) }}</textarea>
                                         </div>
                                     </div>
 
@@ -327,7 +325,7 @@
                                         <label for="insumos" class="form-label">Insumos Requeridos</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-box"></i></span>
-                                            <textarea class="form-control" name="insumos" value="{{ old('insumos', $reservaCal->insumos) }}" rows="2"></textarea>
+                                            <textarea class="form-control" name="insumos" rows="2">{{ old('insumos', $reservaCal->insumos) }}</textarea>
                                         </div>
                                     </div>
 
