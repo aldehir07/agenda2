@@ -10,6 +10,7 @@ use App\Http\Controllers\UsuarioController;
 Route::middleware('auth')->group(function(){
     // Route::get('/', [MainController::class, 'index'])->name('calendario');
     route::get('/', [ReservaCalController::class, 'index'])->name('calendario');
+    route::get('/dia', [ReservaCalController::class, 'index'])->name('calendario'); // Ruta para vista diaria (mismo método index)
     Route::resource('verRegistro', RegistroReservaController::class);
     Route::resource('reservaCal', ReservaCalController::class);
     route::get('tabla2', [RegistroReservaController::class, 'index2'])->name('tabla2');
@@ -24,4 +25,3 @@ Route::resource('/usuario', UsuarioController::class);
 route::get('/login', [UsuarioController::class, 'loginfrm'])->name('login');
 route::post('/login', [UsuarioController::class, 'login'])->name('loginpost');
 route::get('logout', [UsuarioController::class, 'logout'])->name('logout');
-

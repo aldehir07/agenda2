@@ -6,6 +6,7 @@ use App\Models\ReservaCal;
 use Illuminate\Http\Request;
 use App\Models\RegistroReserva;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class ReservaCalController extends Controller
 {
@@ -35,8 +36,15 @@ class ReservaCalController extends Controller
         }
 
         if ($vista === 'semanal') {
-            $semanaActual = request('semana', now()->weekOfYear);
-            $fechaInicio = Carbon::now()->setISODate($anioActual, $semanaActual)->startOfWeek();
+            // Parsear semana tipo 'YYYY-Www' o número simple
+            $weekInput = request('semana', now()->format('o-\WW')); // ej '2025-W24'
+            if (str_contains($weekInput, '-W')) {
+                [$anioSemana, $numSemana] = explode('-W', $weekInput);
+            } else {
+                $anioSemana = now()->format('o');
+                $numSemana = $weekInput;
+            }
+            $fechaInicio = Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
             $fechaFin = $fechaInicio->copy()->endOfWeek();
 
             // Filtrar reservas que coincidan con la semana seleccionada
@@ -47,7 +55,45 @@ class ReservaCalController extends Controller
             });
         }
 
-        return view('calendario', compact('reservaCals', 'reservasCanceladas', 'reservasActivas', 'vista'));
+        // FILTRAR reservas semanales
+        if ($vista === 'semanal') {
+            // Parsear semana tipo 'YYYY-Www' o número simple
+            $weekInput = request('semana', now()->format('o-\WW')); // ej '2025-W24'
+            if (str_contains($weekInput, '-W')) {
+                [$anioSemana, $numSemana] = explode('-W', $weekInput);
+            } else {
+                $anioSemana = now()->format('o');
+                $numSemana = $weekInput;
+            }
+            $fechaInicio = Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
+            $fechaFin = $fechaInicio->copy()->endOfWeek();
+
+            $reservaCals = $reservaCals->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
+                return Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin)
+                    || Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin)
+                    || ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
+            });
+        }
+
+        // FILTRAR eventos de un día específico
+        if ($vista === 'diaria') {
+            $fechaDiaria = request('fecha', now()->toDateString());
+            $reservasDiaria = $reservasActivas->filter(function ($reserva) use ($fechaDiaria) {
+                return Carbon::parse($reserva->fecha_inicio)->format('Y-m-d') <= $fechaDiaria
+                    && Carbon::parse($reserva->fecha_final)->format('Y-m-d') >= $fechaDiaria;
+            });
+
+            return view('calendario', compact(
+                'reservaCals',
+                'reservasCanceladas',
+                'reservasActivas',
+                'vista',
+                'reservasDiaria',
+                'fechaDiaria'
+            ));
+        }
+
+        return view('calendario', compact('reservaCals', 'reservasCanceladas', 'reservasActivas', 'vista'));  
     }
 
 
@@ -268,8 +314,12 @@ class ReservaCalController extends Controller
     //FUNCION PARA CANCELAR RESERVAS
     public function cancel(ReservaCal $reservaCal){
         //Actualizar el estatus a 'cancelado'
-        $reservaCal->update(['estatus' => 'Cancelado']);
-        return redirect()->route('calendario')->with('success', 'Evento cancelado y removido de la agenda');
+        $reservaCal->update([
+            'estatus'       => 'Cancelado',
+            'cancelado_por' => Auth::user()->name,
+        ]);
+        return redirect()->route('calendario')
+                         ->with('success','Reserva cancelada correctamente.');
     }
 
     /**

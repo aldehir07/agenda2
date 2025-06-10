@@ -152,7 +152,7 @@
                                     <div class="mb-3">
                                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
                                         <input type="date" name="fecha_inicio" id="fecha_inicio"
-                                            class="form-control" value="{{ old('fecha_inicio', $fechaInicio) }}"
+                                            class="form-control" value="{{ request('fecha') }}"
                                             required>
                                     </div>
 
@@ -289,7 +289,6 @@
                                             <span class="input-group-text"><i class="fas fa-info-circle"></i></span>
                                             <select class="form-select" name="estatus">
                                                 <option value="Programado">Programado</option>
-                                                <option value="Cancelado">Cancelado</option>
                                                 <option value="Realizado">Realizado</option>
                                                 <option value="Reprogramado">Reprogramado</option>
                                             </select>

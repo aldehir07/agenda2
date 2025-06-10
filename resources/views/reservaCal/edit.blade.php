@@ -356,9 +356,6 @@
                                                 <option value="Programado"
                                                     {{ old('estatus', $reservaCal->estatus) == 'Programado' ? 'selected' : '' }}>
                                                     Programado</option>
-                                                <option value="Cancelado"
-                                                    {{ old('estatus', $reservaCal->estatus) == 'Cancelado' ? 'selected' : '' }}>
-                                                    Cancelado</option>
                                                 <option value="Realizado"
                                                     {{ old('estatus', $reservaCal->estatus) == 'Realizado' ? 'selected' : '' }}>
                                                     Realizado</option>

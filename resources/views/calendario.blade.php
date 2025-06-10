@@ -34,60 +34,51 @@
             <div class="me-4">
                 <label class="form-label fw-bold mb-0">🗓️ Vista:</label>
                 <div class="btn-group" role="group">
-                    <a href="{{ route('calendario', ['vista' => 'mensual', 'mes' => request('mes')]) }}"
-                        class="btn btn-{{ request('vista', 'mensual') === 'mensual' ? 'primary' : 'outline-primary' }}">
+                    <a href="{{ route('calendario', ['vista' => 'mensual', 'mes' => request('mes')]) }}" class="btn btn-{{ request('vista', 'mensual') === 'mensual' ? 'primary' : 'outline-primary' }}">
                         Mensual
                     </a>
-                    {{-- <a href="{{ route('calendario', ['vista' => 'semanal', 'semana' => request('semana', now()->weekOfYear)]) }}"
-                    class="btn btn-{{ request('vista', 'mensual') === 'semanal' ? 'primary' : 'outline-primary' }}">
-                    Semanal
-                    </a> --}}
+                    <a href="{{ route('calendario', ['vista' => 'semanal', 'semana' => request('semana', now()->weekOfYear)]) }}" class="btn btn-{{ request('vista') === 'semanal' ? 'primary' : 'outline-primary' }}">
+                        Semanal
+                    </a>
+                    <a href="{{ route('calendario', ['vista' => 'diaria', 'fecha' => request('fecha', now()->toDateString())]) }}" class="btn btn-{{ request('vista') === 'diaria' ? 'primary' : 'outline-primary' }}">
+                        Diaria
+                    </a>
                 </div>
             </div>
 
             @if (request('vista', 'mensual') === 'mensual')
-            <!-- Selector de Mes (solo visible en vista mensual) -->
-            <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
-                <input type="hidden" name="vista" value="mensual">
-                <label for="mes" class="form-label fw-bold mb-0">📅 Mes:</label>
-                <select name="mes" id="mes" class="form-select w-auto" onchange="this.form.submit()">
-                    @php
-                    setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish_Spain', 'Spanish');
-                    $mesActual = request('mes', now()->format('m'));
-                    @endphp
-                    @foreach (range(1, 12) as $m)
-                    <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}"
-                        {{ $m == $mesActual ? 'selected' : '' }}>
-                        {{ ucfirst(strftime('%B', mktime(0, 0, 0, $m, 1))) }}
-                    </option>
-                    @endforeach
-                </select>
-            </form>
-            @else
-            <!-- Selector de Semana (solo visible en vista semanal) -->
-            {{-- <form method="GET" action="{{ route('calendario') }}"
-            class="d-flex align-items-center gap-3 bg-light p-3 rounded shadow">
-            <input type="hidden" name="vista" value="semanal">
-            <label for="semana" class="form-label fw-bold mb-0 text-primary">
-                <i class="fas fa-calendar-week me-2"></i> Seleccionar Semana:
-            </label>
-            <div class="input-group w-auto">
-                <select name="semana" id="semana" class="form-select" onchange="this.form.submit()">
-                    @php
-                    $semanaActual = request('semana', now()->weekOfYear);
-                    $totalSemanas = 52;
-                    @endphp
-                    @foreach (range(1, $totalSemanas) as $s)
-                    <option value="{{ $s }}" {{ $s == $semanaActual ? 'selected' : '' }}>
-                        Semana {{ $s }}
-                    </option>
-                    @endforeach
-                </select>
-                <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-search"></i>
-                </button>
-            </div>
-            </form> --}}
+                <!-- Selector de Mes (solo visible en vista mensual) -->
+                <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="vista" value="mensual">
+                    <label for="mes" class="form-label fw-bold mb-0">📅 Mes:</label>
+                    <select name="mes" id="mes" class="form-select w-auto" onchange="this.form.submit()">
+                        @php
+                            setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish_Spain', 'Spanish');
+                            $mesActual = request('mes', now()->format('m'));
+                        @endphp
+                        @foreach (range(1, 12) as $m)
+                            <option value="{{ str_pad($m, 2, '0', STR_PAD_LEFT) }}" {{ $m == $mesActual ? 'selected' : '' }}>
+                                {{ ucfirst(strftime('%B', mktime(0, 0, 0, $m, 1))) }}
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            @elseif (request('vista') === 'semanal')
+                <!-- Selector Semana (input type week) -->
+                <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="vista" value="semanal">
+                    <label for="semana" class="form-label fw-bold mb-0">📅 Semana:</label>
+                    <input type="week" id="semana" name="semana"
+                           value="{{ request('semana', now()->format('o-\\WW')) }}"
+                           class="form-control w-auto" onchange="this.form.submit()">
+                </form>
+            @elseif (request('vista') === 'diaria')
+                <!-- Selector de Fecha (solo visible en vista diaria) -->
+                <form method="GET" action="{{ route('calendario') }}" class="d-flex align-items-center gap-2">
+                    <input type="hidden" name="vista" value="diaria">
+                    <label for="fecha" class="form-label fw-bold mb-0">📅 Fecha:</label>
+                    <input type="date" name="fecha" id="fecha" class="form-control w-auto" value="{{ request('fecha', now()->toDateString()) }}" onchange="this.form.submit()">
+                </form>
             @endif
         </div>
 
@@ -96,26 +87,25 @@
             <h6 class="fw-bold mb-2">🎨 Color de Salones:</h6>
             <div class="row">
                 @php
-                    $coloresSalones = [
-                        'Auditorio Jorge L. Quijada' => 'text-white',
-                        'Trabajo en Equipo' => 'bg-success',
-                        'Comunicación Asertiva' => 'bg-info',
-                        'Servicio al Cliente' => 'bg-warning',
-                        'Integridad' => 'bg-danger',
-                        'Creatividad Innovadora' => 'bg-primary',
-                        'Externo' => 'bg-dark',
-                        'Campus Virtual' => 'bg-secondary',
-                    ];
-                    $salones = array_keys($coloresSalones);
+                $coloresSalones = [
+                'Auditorio Jorge L. Quijada' => 'text-white',
+                'Trabajo en Equipo' => 'bg-success',
+                'Comunicación Asertiva' => 'bg-info',
+                'Servicio al Cliente' => 'bg-warning',
+                'Integridad' => 'bg-danger',
+                'Creatividad Innovadora' => 'bg-primary',
+                'Externo' => 'bg-dark',
+                'Campus Virtual' => 'bg-secondary',
+                ];
+                $salones = array_keys($coloresSalones);
                 @endphp
                 @foreach (array_chunk($salones, 4) as $fila)
-                    @foreach ($fila as $salon)
-                        <div class="col-6 col-md-3 mb-2 d-flex align-items-center">
-                            <span class="d-inline-block {{ $coloresSalones[$salon] }}"
-                                style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
-                            <span class="ms-2">{{ $salon }}</span>
-                        </div>
-                    @endforeach
+                @foreach ($fila as $salon)
+                <div class="col-6 col-md-3 mb-2 d-flex align-items-center">
+                    <span class="d-inline-block {{ $coloresSalones[$salon] }}" style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
+                    <span class="ms-2">{{ $salon }}</span>
+                </div>
+                @endforeach
                 @endforeach
             </div>
         </div>
@@ -141,144 +131,134 @@
             @endforeach
 
             <!-- Días vacíos antes del primer día del mes -->
-            @for ($i = 0; $i < $primerDia; $i++)
-                <div class="calendar__day calendar__day--disabled">
+            @for ($i = 0; $i < $primerDia; $i++) <div class="calendar__day calendar__day--disabled">
         </div>
         @endfor
 
         <!-- Días del mes -->
-        @for ($i = 1; $i <= $diasEnMes; $i++)
-            @php
-            $fecha=$anioActual . '-' .
-            str_pad($mesSeleccionado, 2, '0' , STR_PAD_LEFT) . '-' .
-            str_pad($i, 2, '0' , STR_PAD_LEFT);
-            $reservasDia=$reservasActivas->filter(function ($reserva) use ($fecha) {
+        @for ($i = 1; $i <= $diasEnMes; $i++) @php $fecha=$anioActual . '-' . str_pad($mesSeleccionado, 2, '0' , STR_PAD_LEFT) . '-' . str_pad($i, 2, '0' , STR_PAD_LEFT); $reservasDia=$reservasActivas->filter(function ($reserva) use ($fecha) {
             return $reserva->fecha_inicio <= $fecha && $reserva->fecha_final >= $fecha;
                 });
                 @endphp
                 {{-- Agregar reervas por dia --}}
                 <div class="calendar__day">
                     @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('reservaCal.create', ['fecha' => $fecha]) }}"
-                        class="calendar__date">{{ $i }}</a>
+                    <a href="{{ route('reservaCal.create', ['fecha' => $fecha]) }}" class="calendar__date">{{ $i }}</a>
                     @else
                     <span class="calendar__date">{{ $i }}</span>
                     @endif
 
                     @foreach ($reservasDia as $reserva)
-                    <div class="calendar__task {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
-                        @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
+                    <div class="calendar__task {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif" @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
                         data-reserva-id="{{ $reserva->id }}">
                         {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i') }} -
                         {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i') }}
                     </div>
                     @endforeach
                 </div>
-                @endfor
-                @else
+        @endfor
+        @elseif(request('vista') === 'semanal')
                 <!-- Vista Semanal -->
-                {{-- <div class="calendar calendar-week">
-                    @php
-                        $semanaActual = request('semana', now()->weekOfYear);
-                        $fechaInicio = Carbon\Carbon::now()->setISODate($anioActual, $semanaActual)->startOfWeek();
-                        $diasSemana = [];
-                        for ($i = 0; $i < 7; $i++) {
-                            $diasSemana[] = $fechaInicio->copy()->addDays($i);
-                        }
-                    @endphp
-
-                    <div class="week-grid">
-                        <!-- Columna de horas -->
-                        <div class="week-grid__hours">
-                            @for ($hora = 5; $hora <= 22; $hora++)
-                                <div class="week-grid__hour">{{ str_pad($hora, 2, '0', STR_PAD_LEFT) }}:00
-    </div>
-    @endfor
-    </div>
-
-    <!-- Columnas de días -->
-    @foreach ($diasSemana as $dia)
-    <div class="week-grid__day">
-        <div class="week-grid__day-header">
-            {{ $dia->format('D') }}<br>
-            {{ $dia->format('d') }}
-        </div>
-        <div class="week-grid__day-content">
-            @php
-            $reservasDia = $reservaCals->filter(function ($reserva) use ($dia) {
-            return Carbon\Carbon::parse($reserva->fecha_inicio)->format('Y-m-d') <=
-                $dia->format('Y-m-d') &&
-                Carbon\Carbon::parse($reserva->fecha_final)->format('Y-m-d') >=
-                $dia->format('Y-m-d');
-                });
-                @endphp
-                @foreach ($reservasDia as $reserva)
                 @php
-                $horaInicio = Carbon\Carbon::parse($reserva->hora_inicio);
-                $horaFin = Carbon\Carbon::parse($reserva->hora_fin);
-                $top = ($horaInicio->hour - 6) * 60 + $horaInicio->minute;
-                $height =
-                ($horaFin->hour - $horaInicio->hour) * 60 +
-                ($horaFin->minute - $horaInicio->minute);
+                    $weekInput = request('semana', now()->format('o-\\WW'));
+                    // Si viene solo número, anteponer año y 'W'
+                    if (strpos($weekInput, '-W') === false) {
+                        $weekInput = now()->format('o') . '-W' . $weekInput;
+                    }
+                    // Parsear el lunes de esa semana ISO (weekday 1)
+                    $start = \Carbon\Carbon::parse($weekInput . '-1')->startOfWeek();
+                    $days = [];
+                    for ($i = 0; $i < 7; $i++) {
+                        $days[] = $start->copy()->addDays($i);
+                    }
                 @endphp
-                <div class="week-grid__event {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif"
-                    style="top: {{ $top }}px; height: {{ $height }}px; @if ($reserva->salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"
-                    data-reserva-id="{{ $reserva->id }}">
-                    <div class="week-grid__event-content">
-                        <strong>{{ $horaInicio->format('g:i') }} -
-                            {{ $horaFin->format('g:i') }}</strong><br>
-                        {{ $reserva->actividad }}<br>
-                        <small>{{ $reserva->salon }}</small>
-                    </div>
+                <div class="row weekly-view text-white fw-bold">
+                    @foreach($days as $day)
+                        @php
+                            $date = $day->format('Y-m-d');
+                            $events = $reservaCals->filter(fn($r)=> $r->fecha_inicio <= $date && $r->fecha_final >= $date);
+                        @endphp
+                        <div class="col border p-2 text-white fw-bold">
+                            @php setlocale(LC_TIME, 'es_ES.UTF-8'); @endphp
+                            <h6 class="fw-bold">{{ $day->locale('es')->isoFormat('ddd DD/MM') }}</h6>
+                            @if($events->isEmpty())
+                                <p class="small text-white fw-bold">Sin eventos</p>
+                            @else
+                                @foreach($events as $r)
+                                    <div class="small mb-1 p-1 text-white fw-bold {{ $coloresSalones[$r->salon] ?? 'bg-light' }} @if($r->salon==='Auditorio Jorge L. Quijada') text-white @endif"
+                                         @if($r->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                                        {{ \Carbon\Carbon::parse($r->hora_inicio)->format('g:i') }} - {{ \Carbon\Carbon::parse($r->hora_fin)->format('g:i') }}<br>{{ $r->actividad }}
+                                    </div>
+                                @endforeach
+                            @endif
+                        </div>
+                    @endforeach
                 </div>
-                @endforeach
-        </div>
-    </div>
-    @endforeach
-    </div>
-    </div> --}}
-    @endif
+        @elseif(request('vista') === 'diaria')
+                <!-- Vista Diaria -->
+                <div class="daily-view">
+                    <h4 class="text-center text-white mb-4 fw-bold">
+                        Eventos del día {{ \Carbon\Carbon::parse($fechaDiaria)->format('d/m/Y') }}
+                    </h4>
+                    @if($reservasDiaria->isEmpty())
+                        <p class="text-white text-center fw-bold">No hay eventos para esta fecha.</p>
+                    @else
+                        <div class="list-group">
+                            @foreach($reservasDiaria as $reserva)
+                                <div class="list-group-item list-group-item-action fw-bold text-white {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if($reserva->salon==='Auditorio Jorge L. Quijada') text-white @endif" @if($reserva->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <strong>{{ $reserva->actividad }}</strong>
+                                        <small class="fw-bold text-white">{{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i A') }} - {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i A') }}</small>
+                                    </div>
+                                    <small class="fw-bold text-white">Salón: {{ $reserva->salon }}</small>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+                </div>
+        @endif
     </div>
 
     <!-- Tabla de eventos cancelados -->
     <div class="container mt-5 text-white">
         <h3>Eventos Cancelados</h3>
         <form method="GET" action="{{ route('calendario') }}" class="row g-2 align-items-center mb-3">
-        <input type="hidden" name="vista" value="{{ request('vista', 'mensual') }}">
-        <div class="col-auto">
-            <label for="mes_cancelado" class="col-form-label fw-bold">Filtrar por mes:</label>
-        </div>
-        <div class="col-auto">
-            <select name="mes_cancelado" id="mes_cancelado" class="form-select" onchange="this.form.submit()">
-                @php
+            <input type="hidden" name="vista" value="{{ request('vista', 'mensual') }}">
+            <div class="col-auto">
+                <label for="mes_cancelado" class="col-form-label fw-bold">Filtrar por mes:</label>
+            </div>
+            <div class="col-auto">
+                <select name="mes_cancelado" id="mes_cancelado" class="form-select" onchange="this.form.submit()">
+                    @php
                     $mesActual = request('mes_cancelado', now()->format('m'));
                     $meses = [
-                        '01' => 'Enero',
-                        '02' => 'Febrero',
-                        '03' => 'Marzo',
-                        '04' => 'Abril',
-                        '05' => 'Mayo',
-                        '06' => 'Junio',
-                        '07' => 'Julio',
-                        '08' => 'Agosto',
-                        '09' => 'Septiembre',
-                        '10' => 'Octubre',
-                        '11' => 'Noviembre',
-                        '12' => 'Diciembre',
+                    '01' => 'Enero',
+                    '02' => 'Febrero',
+                    '03' => 'Marzo',
+                    '04' => 'Abril',
+                    '05' => 'Mayo',
+                    '06' => 'Junio',
+                    '07' => 'Julio',
+                    '08' => 'Agosto',
+                    '09' => 'Septiembre',
+                    '10' => 'Octubre',
+                    '11' => 'Noviembre',
+                    '12' => 'Diciembre',
                     ];
-                @endphp
-                <option value="">Todos</option>
-                @foreach ($meses as $num => $nombre)
+                    @endphp
+                    <option value="">Todos</option>
+                    @foreach ($meses as $num => $nombre)
                     <option value="{{ $num }}" {{ $mesActual == $num ? 'selected' : '' }}>{{ $nombre }}</option>
-                @endforeach
-            </select>
-        </div>
-    </form>
+                    @endforeach
+                </select>
+            </div>
+        </form>
         <table class="table table-striped text-white">
             <thead>
                 <tr>
                     <th>Número Evento</th>
                     <th>Actividad</th>
+                    <th>Cancelado por</th>
                     <th>Fecha</th>
                     <th>Horario</th>
                     <th>Salon</th>
@@ -286,9 +266,11 @@
             </thead>
             <tbody>
                 @foreach ($reservasCanceladas as $cancelada)
+                {{-- @dd($cancelada) --}}
                 <tr class="text-white">
                     <td>{{ $cancelada->numero_evento }}</td>
                     <td>{{ $cancelada->actividad }}</td>
+                    <td>{{ $cancelada->cancelado_por }}</td>
                     <td>{{ \Carbon\Carbon::parse($cancelada->fecha_inicio)->format('d/m/Y') }} -
                         {{ \Carbon\Carbon::parse($cancelada->fecha_final)->format('d/m/Y') }}
                     </td>
@@ -303,8 +285,7 @@
                             'Integridad' => 'bg-danger text-white',
                             'Creatividad Innovadora' => 'bg-primary text-center',
                             'Externo' => 'bg-dark text-white'
-                            ][$cancelada->salon] ?? '' }}"
-                        @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                            ][$cancelada->salon] ?? '' }}" @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
                         {{ $cancelada->salon }}
                     </td>
                 </tr>
@@ -314,8 +295,7 @@
     </div>
 
     <!-- Modal para detalles de reserva -->
-    <div class="modal fade" id="detalleReservaModal" tabindex="-1" aria-labelledby="detalleReservaModalLabel"
-        aria-hidden="true">
+    <div class="modal fade" id="detalleReservaModal" tabindex="-1" aria-labelledby="detalleReservaModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -326,8 +306,7 @@
                     <div class="row">
                         <div class="col-12 mb-3">
                             <div class="d-flex align-items-center">
-                                <span id="modalColorSalon" class="d-inline-block me-2"
-                                    style="width: 20px; height: 20px; border-radius: 4px;"></span>
+                                <span id="modalColorSalon" class="d-inline-block me-2" style="width: 20px; height: 20px; border-radius: 4px;"></span>
                                 <h6 class="mb-0" id="modalSalon"></h6>
                             </div>
                         </div>
@@ -336,6 +315,7 @@
                             <p><strong>Horario:</strong> <span id="modalHorario"></span></p>
                             <p><strong>Actividad:</strong> <span id="modalActividad"></span></p>
                             <p><strong>Analista:</strong> <span id="modalAnalista"></span></p>
+                            <p><strong>Creado por:</strong> <span id="modalUsuario"></span></p>
                         </div>
                         <div class="col-md-6">
                             <p><strong>Depto.:</strong> <span id="modalDepto"></span></p>
@@ -349,6 +329,18 @@
                         </div>
                     </div>
                 </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <a href="#" id="modalEditarBtn" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <form id="modalCancelForm" method="POST" class="d-inline ms-2">
+                        @csrf
+                        <button type="submit" id="modalCancelarBtn" class="btn btn-danger">
+                            <i class="fas fa-ban"></i> Cancelar
+                        </button>
+                    </form>
+                </div>
 
             </div>
         </div>
@@ -359,12 +351,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Convertir las reservas a un objeto JavaScript
             const reservas = @json($reservaCals);
+            const currentUser = @json(Auth::user()->name);
             const coloresSalones = @json($coloresSalones);
             const modal = new bootstrap.Modal(document.getElementById('detalleReservaModal'));
 
-            // Función para mostrar los detalles en el modal
             function mostrarDetallesReserva(reservaId) {
 
                 const reserva = reservas.find(r => r.id === reservaId);
@@ -372,10 +363,10 @@
 
                 // Formatear la fecha
                 const fecha = new Date(reserva.fecha).toLocaleDateString('es-ES', {
-                    weekday: 'long',
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+                    weekday: 'long'
+                    , year: 'numeric'
+                    , month: 'long'
+                    , day: 'numeric'
                 });
 
                 // Actualizar el contenido del modal
@@ -386,6 +377,7 @@
                     `${moment(reserva.hora_inicio, 'HH:mm:ss').format('h:mm')} - ${moment(reserva.hora_fin, 'HH:mm:ss').format('h:mm')}`;
                 document.getElementById('modalActividad').textContent = reserva.actividad;
                 document.getElementById('modalAnalista').textContent = reserva.analista;
+                document.getElementById('modalUsuario').textContent = currentUser;
                 document.getElementById('modalDepto').textContent = reserva.depto_responsable;
                 document.getElementById('modalParticipantes').textContent = reserva.cant_participantes;
                 document.getElementById('modalFacilitador').textContent = reserva.facilitador_moderador;
@@ -393,6 +385,9 @@
                 document.getElementById('modalInsumos').textContent = reserva.insumos || 'No especificado';
                 document.getElementById('modalRequisitos').textContent = reserva.requisitos_tecnicos ||
                     'No especificado';
+                document.getElementById('modalEditarBtn').href = `/reservaCal/${reserva.id}/edit`;
+                const cancelForm = document.getElementById('modalCancelForm');
+                cancelForm.action = `/reservaCal/${reserva.id}/cancel`;
 
                 modal.show();
             }
@@ -406,6 +401,7 @@
                 });
             });
         });
+
     </script>
 </body>
 

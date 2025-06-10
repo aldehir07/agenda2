@@ -33,6 +33,7 @@ class RegistroReserva extends Model
         'cant_participantes',
         'facilitador_moderador',
         'estatus',
+        'cancelado_por',
         'insumos',
         'requisitos_tecnicos',
         'asistencia_tecnica'
