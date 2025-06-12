@@ -18,6 +18,9 @@
             <label for="semana" class="form-label fw-bold">Ver solo eventos de la semana:</label>
             <input type="week" id="semana" name="semana" value="{{ $semana }}" class="form-control d-inline-block w-auto" onchange="this.form.submit()">
             <button type="submit" class="btn btn-primary ms-2">Filtrar</button>
+            @if(request()->has('semana'))
+                <a href="{{ route('verRegistro.index') }}" class="btn btn-secondary ms-2">Ver todos</a>
+            @endif
         </form>
         @if(session('success'))
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -25,6 +28,12 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         @endif
+        <!-- <a href="{{ route('reservas.export') }}" class="btn btn-success mb-3">
+            <i class="fas fa-file-excel"></i> Exportar a Excel
+        </a> -->
+        <a href="{{ route('servicios.pdf', ['semana' => $semana]) }}" class="btn btn-danger mb-3" target="_blank">
+            <i class="fas fa-file-pdf"></i> Exportar Servicios Administrativos a PDF
+        </a>
         <div class="card mb-4">
             <div class="card-header">
                 <div class="d-flex justify-content-between align-items-center">
@@ -41,7 +50,7 @@
                 <select id="viewSelector" class="form-select w-auto d-inline-block">
                     <option value="general">Vista General</option>
                     <option value="soporte">Soporte Técnico</option>
-                    <option value="insumos">Insumos</option>
+                    <option value="insumos">Servicios Administrativos</option>
                     <option value="virtual">Virtual</option>
                 </select>
             </div>

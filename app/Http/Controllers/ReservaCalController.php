@@ -226,7 +226,7 @@ class ReservaCalController extends Controller
         return view('reservaCal.edit', compact('reservaCal'));
     }
 
-   //Funcion para actualzar la reserva 
+    //Funcion para actualzar la reserva 
     public function update(Request $request, ReservaCal $reservaCal)
     {
         // dd($request->all());
@@ -317,6 +317,28 @@ class ReservaCalController extends Controller
     //Restaurar eventos que fueron cancelados al
     public function restaurar(ReservaCal $reservaCal)
     {
+
+        // Solo validar cruce de fechas/horas si NO es Campus Virtual
+        if ($reservaCal->salon !== 'Campus Virtual') {
+            $existeReserva = ReservaCal::where('salon', $reservaCal->salon)
+                ->where('estatus', '!=', 'Cancelado')
+                ->where('id', '!=', $reservaCal->id) // Ignorar el evento que se va a restaurar
+                ->where(function ($query) use ($reservaCal) {
+                    $query->whereBetween('fecha_inicio', [$reservaCal->fecha_inicio, $reservaCal->fecha_final])
+                        ->orWhereBetween('fecha_final', [$reservaCal->fecha_inicio, $reservaCal->fecha_final]);
+                })
+                ->where(function ($query) use ($reservaCal) {
+                    $query->where(function ($q) use ($reservaCal) {
+                        $q->where('hora_inicio', '<', $reservaCal->hora_fin)
+                            ->where('hora_fin', '>', $reservaCal->hora_inicio);
+                    });
+                })
+                ->exists();
+
+            if ($existeReserva) {
+                return redirect()->route('calendario')->with('error', 'No se puede restaurar: ya existe una reserva en el mismo salón y horario.');
+            }
+        }
 
         $reservaCal->update([
             'estatus' => 'Reprogramado',

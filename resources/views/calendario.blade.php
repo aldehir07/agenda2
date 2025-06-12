@@ -14,7 +14,7 @@
 <body>
     @include('plantilla.nabvar')
     <div class="container py-4">
-        <h2 class="text-center text-white mb-4">Calendario de Reservas</h2>
+        <h2 class="text-center text-white mb-4">CALENDARIO DE RESERVAS</h2>
 
         {{-- MENSAJES DE ERROR Y ÉXITO --}}
         @if (session('error'))
@@ -87,42 +87,42 @@
             <h6 class="fw-bold mb-2">🎨 Color de Salones:</h6>
             <div class="row">
                 @php
-                $coloresSalones = [
-                'Auditorio Jorge L. Quijada' => 'text-white',
-                'Trabajo en Equipo' => 'bg-success',
-                'Comunicación Asertiva' => 'bg-info',
-                'Servicio al Cliente' => 'bg-warning',
-                'Integridad' => 'bg-danger',
-                'Creatividad Innovadora' => 'bg-primary',
-                'Externo' => 'bg-dark',
-                'Campus Virtual' => 'bg-secondary',
-                ];
-                $salones = array_keys($coloresSalones);
+                    $coloresSalones = [
+                    'Auditorio Jorge L. Quijada' => 'text-white',
+                    'Trabajo en Equipo' => 'bg-success',
+                    'Comunicación Asertiva' => 'bg-info',
+                    'Servicio al Cliente' => 'bg-warning',
+                    'Integridad' => 'bg-danger',
+                    'Creatividad Innovadora' => 'bg-primary',
+                    'Externo' => 'bg-dark',
+                    'Campus Virtual' => 'bg-secondary',
+                    ];
+                    $salones = array_keys($coloresSalones);
                 @endphp
                 @foreach (array_chunk($salones, 4) as $fila)
-                @foreach ($fila as $salon)
-                <div class="col-6 col-md-3 mb-2 d-flex align-items-center">
-                    <span class="d-inline-block {{ $coloresSalones[$salon] }}" style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
-                    <span class="ms-2">{{ $salon }}</span>
-                </div>
-                @endforeach
+                    @foreach ($fila as $salon)
+                    <div class="col-6 col-md-3 mb-2 d-flex align-items-center">
+                        <span class="d-inline-block {{ $coloresSalones[$salon] }}" style="width: 20px; height: 20px; border-radius: 4px; @if ($salon == 'Auditorio Jorge L. Quijada') background-color: purple; @endif"></span>
+                        <span class="ms-2">{{ $salon }}</span>
+                    </div>
+                    @endforeach
                 @endforeach
             </div>
         </div>
 
         @php
         // Variables comunes para ambas vistas
-        $anioActual = now()->format('Y');
-        $mesSeleccionado = request('mes', now()->format('m'));
+            $anioActual = now()->format('Y');
+            $mesSeleccionado = request('mes', now()->format('m'));
         @endphp
 
         @if (request('vista', 'mensual') === 'mensual')
         <!-- Vista Mensual -->
         <div class="calendar calendar-month">
             @php
-            $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mesSeleccionado, $anioActual);
-            $primerDia = Carbon\Carbon::createFromDate($anioActual, $mesSeleccionado, 1)->dayOfWeek;
-            $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+                $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mesSeleccionado, $anioActual);
+                $primerDia = Carbon\Carbon::createFromDate($anioActual, $mesSeleccionado, 1)->dayOfWeek;
+                $diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
             @endphp
 
             <!-- Encabezados de días de la semana -->
@@ -147,9 +147,9 @@
                     @else
                     <span class="calendar__date">{{ $i }}</span>
                     @endif
-
+                    <!-- Vista de reserva -->
                     @foreach ($reservasDia as $reserva)
-                    <div class="calendar__task {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif" @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
+                    <div class="calendar__task fw-bold {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif" @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
                         data-reserva-id="{{ $reserva->id }}">
                         {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i') }} -
                         {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i') }}
@@ -158,7 +158,6 @@
                 </div>
         @endfor
         @elseif(request('vista') === 'semanal')
-                <!-- Vista Semanal -->
                 @php
                     $weekInput = request('semana', now()->format('o-\\WW'));
                     // Si viene solo número, anteponer año y 'W'
@@ -172,6 +171,7 @@
                         $days[] = $start->copy()->addDays($i);
                     }
                 @endphp
+                <!-- VISTA DE LA SEMANA  -->
                 <div class="row weekly-view text-white fw-bold">
                     @foreach($days as $day)
                         @php
@@ -185,8 +185,9 @@
                                 <p class="small text-white fw-bold">Sin eventos</p>
                             @else
                                 @foreach($events as $r)
-                                    <div class="small mb-1 p-1 text-white fw-bold {{ $coloresSalones[$r->salon] ?? 'bg-light' }} @if($r->salon==='Auditorio Jorge L. Quijada') text-white @endif"
-                                         @if($r->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                                    <div class="calendar__task small mb-1 p-1 text-white fw-bold {{ $coloresSalones[$r->salon] ?? 'bg-light' }} @if($r->salon==='Auditorio Jorge L. Quijada') text-white @endif"
+                                        data-reserva-id="{{ $r->id }}"
+                                        @if($r->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
                                         {{ \Carbon\Carbon::parse($r->hora_inicio)->format('g:i') }} - {{ \Carbon\Carbon::parse($r->hora_fin)->format('g:i') }}<br>{{ $r->actividad }}
                                     </div>
                                 @endforeach
@@ -205,7 +206,9 @@
                     @else
                         <div class="list-group">
                             @foreach($reservasDiaria as $reserva)
-                                <div class="list-group-item list-group-item-action fw-bold text-white {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if($reserva->salon==='Auditorio Jorge L. Quijada') text-white @endif" @if($reserva->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                                <div class="calendar__task list-group-item list-group-item-action fw-bold text-white {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if($reserva->salon==='Auditorio Jorge L. Quijada') text-white @endif"
+                                    data-reserva-id="{{ $reserva->id }}"
+                                    @if($reserva->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
                                     <div class="d-flex w-100 justify-content-between">
                                         <strong>{{ $reserva->actividad }}</strong>
                                         <small class="fw-bold text-white">{{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i A') }} - {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i A') }}</small>

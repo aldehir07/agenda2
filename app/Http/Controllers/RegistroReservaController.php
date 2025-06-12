@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\RegistroReserva;
 use App\Models\ReservaCal;
 use Illuminate\Http\Request;
+use App\Exports\ReservasExport;
+use Barryvdh\DomPDF\PDF;
+use Maatwebsite\Excel\Facades\Excel;
 
 class RegistroReservaController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+
     public function index()
     {
         $reservas = ReservaCal::orderBy('fecha_inicio', 'asc')->get();
@@ -36,6 +37,37 @@ class RegistroReservaController extends Controller
         });
 
         return view('verRegistro.index', compact('reservas', 'reservasSemana', 'semana'));
+    }
+
+      public function export(){
+        return Excel::download(new ReservasExport, 'reservas.xlsx');
+    }
+
+    // Exportar a PDF la vista de mi tabla
+    public function exportServiciosPDF(Request $request)
+    {
+        $semana = $request->input('semana', now()->format('o-\WW'));
+
+        if (str_contains($semana, '-W')) {
+            [$anioSemana, $numSemana] = explode('-W', $semana);
+        } else {
+            $anioSemana = now()->format('o');
+            $numSemana = $semana;
+        }
+        $fechaInicio = \Carbon\Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
+        $fechaFin = $fechaInicio->copy()->endOfWeek();
+
+        // Filtrar solo los eventos de la semana
+        $reservas = ReservaCal::orderBy('fecha_inicio', 'asc')->get()->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
+            return \Carbon\Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin) ||
+                \Carbon\Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin) ||
+                ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
+        });
+
+        $pdf = app('dompdf.wrapper')
+            ->loadView('verRegistro.servicios_pdf', compact('reservas'))
+            ->setPaper('a4', 'landscape');
+        return $pdf->download('servicios_administrativos.pdf');
     }
 
     /**

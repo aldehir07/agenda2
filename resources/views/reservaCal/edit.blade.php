@@ -397,7 +397,7 @@
                                             <select class="form-select" name="analista">
                                                 <option value="" disabled selected>Seleccion</option>
                                                 <option value="Anabel Santana" {{ old('analista', $reservaCal->analista) == 'Anabel Santana' ? 'selected' : '' }}>Anabel Santana</option>
-                                                <option value="Eva Ortega" {{ old('analista', $reservaCal->analista) == 'Eva Ortega' ? 'selectted' : '' }}>Eva Ortega</option>
+                                                <option value="Eva Ortega" {{ old('analista', $reservaCal->analista) == 'Eva Ortega' ? 'selected' : '' }}>Eva Ortega</option>
                                                 <option value="Helvetia Bernal" {{ old('analista', $reservaCal->analista) == 'Helvetia Bernal' ? 'selected' : '' }}>Helvetia Bernal</option>
                                                 <option value="Liseth Rodriguez" {{ old('analista', $reservaCal->analista) == 'Liseth Rodriguez' ? 'selected' : '' }}>Liseth Rodriguez</option>
                                                 <option value="Melanie Taylor" {{ old('analista', $reservaCal->analista) == 'Melanie Taylor' ? 'selected' : '' }}>Melanie Taylor</option>

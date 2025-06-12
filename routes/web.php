@@ -1,5 +1,6 @@
 <?php
 
+use App\Exports\ReservasExport;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\ReservaCalController;
@@ -19,7 +20,8 @@ Route::middleware('auth')->group(function(){
 
 });
 
-
+Route::get('/servicios-administrativos/pdf', [RegistroReservaController::class, 'exportServiciosPDF'])->name('servicios.pdf');
+Route::get('/reservas/export', [RegistroReservaController::class, 'export'])->name('reservas.export');
 Route::resource('/usuario', UsuarioController::class);
 
 
