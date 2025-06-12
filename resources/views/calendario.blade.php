@@ -176,7 +176,7 @@
                     @foreach($days as $day)
                         @php
                             $date = $day->format('Y-m-d');
-                            $events = $reservaCals->filter(fn($r)=> $r->fecha_inicio <= $date && $r->fecha_final >= $date);
+                            $events = $reservasActivas->filter(fn($r)=> $r->fecha_inicio <= $date && $r->fecha_final >= $date);
                         @endphp
                         <div class="col border p-2 text-white fw-bold">
                             @php setlocale(LC_TIME, 'es_ES.UTF-8'); @endphp
@@ -262,6 +262,7 @@
                     <th>Fecha</th>
                     <th>Horario</th>
                     <th>Salon</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -287,6 +288,14 @@
                             'Externo' => 'bg-dark text-white'
                             ][$cancelada->salon] ?? '' }}" @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
                         {{ $cancelada->salon }}
+                    </td>
+                    <td>
+                        <form action="{{ route('reservaCal.restaurar', $cancelada->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            <button type="submit" class="btn btn-success btn-sm">
+                                <i class="fas fa-undo"></i> Restaurar
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach
@@ -326,6 +335,7 @@
                         <div class="col-12">
                             <p><strong>Insumos:</strong> <span id="modalInsumos"></span></p>
                             <p><strong>Requisitos Técnicos:</strong> <span id="modalRequisitos"></span></p>
+                            <p><strong>Montaje:</strong> <span id="modalMontaje"></span></p>
                         </div>
                     </div>
                 </div>
@@ -384,6 +394,8 @@
                 document.getElementById('modalEstatus').textContent = reserva.estatus;
                 document.getElementById('modalInsumos').textContent = reserva.insumos || 'No especificado';
                 document.getElementById('modalRequisitos').textContent = reserva.requisitos_tecnicos ||
+                    'No especificado';
+                    document.getElementById('modalMontaje').textContent = reserva.montaje ||
                     'No especificado';
                 document.getElementById('modalEditarBtn').href = `/reservaCal/${reserva.id}/edit`;
                 const cancelForm = document.getElementById('modalCancelForm');

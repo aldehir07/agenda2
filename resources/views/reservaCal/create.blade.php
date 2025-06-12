@@ -133,7 +133,7 @@
                                         <label class="form-label">Mes</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                                            <select class="form-select" name="mes" id="mes" required>
+                                            <select class="form-select" name="mes" id="mes" required readonly>
                                                 <option value="" disabled {{ old('mes') == '' ? 'selected' : '' }}>Selecciona un mes</option>
                                                 @foreach (['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'] as $mes)
                                                 <option value="{{ $mes }}"
@@ -153,7 +153,7 @@
                                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
                                         <input type="date" name="fecha_inicio" id="fecha_inicio"
                                             class="form-control" value="{{ request('fecha') }}"
-                                            required>
+                                            required readonly>
                                     </div>
 
                                     <div class="mb-3">
@@ -234,7 +234,7 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-list"></i></span>
                                             <select name="subtipo_actividad" id="subtipo_actividad" class="form-select">
-                                                <option value="">Seleccione subtipo</option>
+                                                <option value="" disabled selected>Seleccione subtipo</option>
                                             </select>
                                         </div>
                                     </div>
@@ -255,6 +255,14 @@
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <textarea class="form-control" name="requisitos_tecnicos" rows="2" value="{{ old('requisitos_tecnicos') }}"></textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label for="montaje" class="form-label">Montaje</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-tools"></i></span>
+                                            <textarea class="form-control" name="montaje" rows="2" value="{{ old('montaje') }}"></textarea>
                                         </div>
                                     </div>
 

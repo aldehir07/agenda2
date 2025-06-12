@@ -36,6 +36,7 @@ class RegistroReserva extends Model
         'cancelado_por',
         'insumos',
         'requisitos_tecnicos',
+        'montaje',
         'asistencia_tecnica'
     ];
 }

@@ -15,6 +15,7 @@ Route::middleware('auth')->group(function(){
     Route::resource('reservaCal', ReservaCalController::class);
     route::get('tabla2', [RegistroReservaController::class, 'index2'])->name('tabla2');
     Route::post('reservaCal/{reservaCal}/cancel', [ReservaCalController::class, 'cancel'])->name('reservaCal.cancel');
+    Route::post("/reservaCal/{reservaCal}/restaurar", [ReservaCalController::class, 'restaurar'])->name('reservaCal.restaurar');
 
 });
 

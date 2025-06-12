@@ -19,11 +19,11 @@ class ReservaCalController extends Controller
         $anioActual = now()->format('Y');
 
         //Filtrar las reservas activas(no canceladas)
-        $reservasActivas = $reservaCals->filter(function ($reserva){
+        $reservasActivas = $reservaCals->filter(function ($reserva) {
             return strtolower(trim($reserva->estatus)) !== 'cancelado';
         });
         //Filtrar las reservas canceladas
-        $reservasCanceladas = $reservaCals->filter(function ($reserva){
+        $reservasCanceladas = $reservaCals->filter(function ($reserva) {
             return strtolower(trim($reserva->estatus)) === 'cancelado';
         });
 
@@ -32,26 +32,6 @@ class ReservaCalController extends Controller
         if ($mesCancelado) {
             $reservasCanceladas = $reservasCanceladas->filter(function ($reserva) use ($mesCancelado) {
                 return \Carbon\Carbon::parse($reserva->fecha_inicio)->format('m') == $mesCancelado;
-            });
-        }
-
-        if ($vista === 'semanal') {
-            // Parsear semana tipo 'YYYY-Www' o número simple
-            $weekInput = request('semana', now()->format('o-\WW')); // ej '2025-W24'
-            if (str_contains($weekInput, '-W')) {
-                [$anioSemana, $numSemana] = explode('-W', $weekInput);
-            } else {
-                $anioSemana = now()->format('o');
-                $numSemana = $weekInput;
-            }
-            $fechaInicio = Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
-            $fechaFin = $fechaInicio->copy()->endOfWeek();
-
-            // Filtrar reservas que coincidan con la semana seleccionada
-            $reservaCals = $reservaCals->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
-                return Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin) ||
-                       Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin) ||
-                       ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
             });
         }
 
@@ -68,12 +48,19 @@ class ReservaCalController extends Controller
             $fechaInicio = Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
             $fechaFin = $fechaInicio->copy()->endOfWeek();
 
+            // Filtrar reservas que coincidan con la semana seleccionada
             $reservaCals = $reservaCals->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
-                return Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin)
-                    || Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin)
-                    || ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
+                return Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin) ||
+                    Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin) ||
+                    ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
+            });
+
+            // Filtrar SOLO ACTIVAS para mostrar en la semana
+            $reservasActivas = $reservaCals->filter(function ($reserva) {
+                return strtolower(trim($reserva->estatus)) !== 'cancelado';
             });
         }
+
 
         // FILTRAR eventos de un día específico
         if ($vista === 'diaria') {
@@ -93,7 +80,7 @@ class ReservaCalController extends Controller
             ));
         }
 
-        return view('calendario', compact('reservaCals', 'reservasCanceladas', 'reservasActivas', 'vista'));  
+        return view('calendario', compact('reservaCals', 'reservasCanceladas', 'reservasActivas', 'vista'));
     }
 
 
@@ -105,6 +92,7 @@ class ReservaCalController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'fecha_inicio' => 'required|date',
             'fecha_final' => 'required|date|after_or_equal:fecha_inicio',
@@ -126,8 +114,8 @@ class ReservaCalController extends Controller
             'mes' => 'required|string',
             'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
             'subtipo_actividad' => [
-                'nullable',
-                function($attribute, $value, $fail) use ($request) {
+                'required',
+                function ($attribute, $value, $fail) use ($request) {
                     $tipo = $request->input('tipo_actividad');
 
                     $opciones = [
@@ -135,8 +123,8 @@ class ReservaCalController extends Controller
                         'REPLICA' => ['Seminario', 'Taller', 'Seminario/Taller'],
                         'Reunion' => ['Ninguno', null],
                     ];
-                    if(!in_array($value, $opciones[$tipo])){
-                        $fail("El subtipo de actividad '$value' no es valido para el tipo '$tipo'.");
+                    if (!in_array($value, $opciones[$tipo])) {
+                        $fail("Debe seleccionar un sibtipo de actividad valido para el tipo '$tipo'.");
                     }
                 }
             ],
@@ -145,7 +133,8 @@ class ReservaCalController extends Controller
             'modalidad' => 'required|in:Presencial,Virtual,Mixto',
             'publico_meta' => 'required|string',
             'cant_participantes' => [
-                'required', 'numeric',
+                'required',
+                'numeric',
                 function ($attribute, $value) use ($request) {
                     $limites = [
                         'Auditorio Jorge L. Quijada' => 100,
@@ -165,28 +154,30 @@ class ReservaCalController extends Controller
             'estatus' => 'required',
             'insumos' => 'nullable|string',
             'requisitos_tecnicos' => 'nullable|string',
+            'montaje' => 'nullable|string',
             'asistencia_tecnica' => 'required'
         ]);
 
-        // Verificar si ya existe una reserva en el mismo rango de fechas, horas y salón
-        $existeReserva = ReservaCal::where('salon', $request->salon)
-            ->where('estatus', '!=', 'Cancelado') //Ignora reservas canceladas
-            ->where(function ($query) use ($request) {
-                $query->whereBetween('fecha_inicio', [$request->fecha_inicio, $request->fecha_final])
-                      ->orWhereBetween('fecha_final', [$request->fecha_inicio, $request->fecha_final]);
-            })
-            ->where(function ($query) use ($request) {
-                $query->where(function ($q) use ($request) {
-                    $q->where('hora_inicio', '<', $request->hora_fin)
-                      ->where('hora_fin', '>', $request->hora_inicio);
-                });
-            })
-            ->exists();
+        // Solo validar cruce de fechas/horas si NO es Campus Virtual
+        if ($request->salon !== 'Campus Virtual') {
+            $existeReserva = ReservaCal::where('salon', $request->salon)
+                ->where('estatus', '!=', 'Cancelado')
+                ->where(function ($query) use ($request) {
+                    $query->whereBetween('fecha_inicio', [$request->fecha_inicio, $request->fecha_final])
+                        ->orWhereBetween('fecha_final', [$request->fecha_inicio, $request->fecha_final]);
+                })
+                ->where(function ($query) use ($request) {
+                    $query->where(function ($q) use ($request) {
+                        $q->where('hora_inicio', '<', $request->hora_fin)
+                            ->where('hora_fin', '>', $request->hora_inicio);
+                    });
+                })
+                ->exists();
 
-        if ($existeReserva) {
-            return redirect()->back()->withErrors(['error' => 'Ya existe una reserva en el mismo salón y horario.']);
+            if ($existeReserva) {
+                return redirect()->back()->withErrors(['error' => 'Ya existe una reserva en el mismo salón y horario.']);
+            }
         }
-
         // Crear un único registro con las fechas de inicio y fin
         ReservaCal::create([
             'fecha' => $request->fecha_inicio, // Fecha de inicio como referencia
@@ -212,6 +203,7 @@ class ReservaCalController extends Controller
             'estatus' => $request->estatus,
             'insumos' => $request->insumos,
             'requisitos_tecnicos' => $request->requisitos_tecnicos,
+            'montaje' => $request->montaje,
             'asistencia_tecnica' => $request->asistencia_tecnica
         ]);
 
@@ -228,17 +220,13 @@ class ReservaCalController extends Controller
     }
 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
+    //Funcion pra editar el formulario 
     public function edit(ReservaCal $reservaCal)
     {
         return view('reservaCal.edit', compact('reservaCal'));
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
+   //Funcion para actualzar la reserva 
     public function update(Request $request, ReservaCal $reservaCal)
     {
         // dd($request->all());
@@ -258,13 +246,14 @@ class ReservaCalController extends Controller
                                 "Externo",
                                 "Campus Virtual"',
             'depto_responsable' => 'required',
-            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento,'. $reservaCal->id,
+            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento,' . $reservaCal->id,
             'scafid' => 'nullable|string',
             'mes' => 'required|string',
             'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
+            //
             'subtipo_actividad' => [
-                'nullable',
-                function($attribute, $value, $fail) use ($request) {
+                'required',
+                function ($attribute, $value, $fail) use ($request) {
                     $tipo = $request->input('tipo_actividad');
 
                     $opciones = [
@@ -272,8 +261,8 @@ class ReservaCalController extends Controller
                         'REPLICA' => ['Seminario', 'Taller', 'Seminario/Taller'],
                         'Reunion' => ['Ninguno', null],
                     ];
-                    if(!in_array($value, $opciones[$tipo])){
-                        $fail("El subtipo de actividad '$value' no es valido para el tipo '$tipo'.");
+                    if (!in_array($value, $opciones[$tipo])) {
+                        $fail("Debe seleccionar un sibtipo de actividad valido para el tipo '$tipo'.");
                     }
                 }
             ],
@@ -282,7 +271,8 @@ class ReservaCalController extends Controller
             'modalidad' => 'required|in:Presencial,Virtual,Mixto',
             'publico_meta' => 'required|string',
             'cant_participantes' => [
-                'required', 'numeric',
+                'required',
+                'numeric',
                 function ($attribute, $value) use ($request) {
                     $limites = [
                         'Auditorio Jorge L. Quijada' => 100,
@@ -302,6 +292,7 @@ class ReservaCalController extends Controller
             'estatus' => 'required',
             'insumos' => 'nullable|string',
             'requisitos_tecnicos' => 'nullable|string',
+            'montaje' => 'nullable|string',
             'asistencia_tecnica' => 'required'
         ]);
 
@@ -312,14 +303,26 @@ class ReservaCalController extends Controller
     }
 
     //FUNCION PARA CANCELAR RESERVAS
-    public function cancel(ReservaCal $reservaCal){
+    public function cancel(ReservaCal $reservaCal)
+    {
         //Actualizar el estatus a 'cancelado'
         $reservaCal->update([
             'estatus'       => 'Cancelado',
             'cancelado_por' => Auth::user()->name,
         ]);
         return redirect()->route('calendario')
-                         ->with('success','Reserva cancelada correctamente.');
+            ->with('success', 'Reserva cancelada correctamente.');
+    }
+
+    //Restaurar eventos que fueron cancelados al
+    public function restaurar(ReservaCal $reservaCal)
+    {
+
+        $reservaCal->update([
+            'estatus' => 'Reprogramado',
+            'cancelado_por' => null,
+        ]);
+        return redirect()->route('calendario')->with('success', 'Evento restaurado al calendario');
     }
 
     /**

@@ -330,6 +330,14 @@
                                     </div>
 
                                     <div class="mb-3">
+                                        <label for="montaje" class="form-label">Montaje</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-box"></i></span>
+                                            <textarea class="form-control" name="montaje" rows="2">{{ old('montaje', $reservaCal->montaje) }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
                                         <label class="form-label">Público Meta</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-users"></i></span>
