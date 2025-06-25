@@ -17,13 +17,13 @@ return new class extends Migration
             $table->time('hora_inicio');
             $table->time('hora_fin');
             $table->text('actividad');
-            $table->enum('analista', ['Anabel Santana', 'Eva Ortega', 
+            $table->enum('analista', ['Por Asignar', 'Anabel Santana', 'Eva Ortega', 
                         'Helvetia Bernal', 'Liseth Rodriguez', 'Melanie Taylor', 
                         'Veronica de Ureña', 'Walter Lizondro', 'Yesenia Delgado'
                     ]);
             $table->string('salon');
             $table->string('depto_responsable');
-            $table->string('numero_evento', 10)->unique();
+            $table->string('numero_evento', 10)->unique()->nullable();
             $table->string('scafid')->nullable();
             $table->string('mes');
             $table->date('fecha_inicio');

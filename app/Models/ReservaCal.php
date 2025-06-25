@@ -36,6 +36,7 @@ class ReservaCal extends Model
         'insumos',
         'requisitos_tecnicos',
         'montaje',
-        'asistencia_tecnica'
+        'asistencia_tecnica',
+        'creado_por'
     ];
 }

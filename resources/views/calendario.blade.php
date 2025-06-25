@@ -118,6 +118,11 @@
 
         @if (request('vista', 'mensual') === 'mensual')
         <!-- Vista Mensual -->
+         <div class="mb-3 text-center">
+            <button id="btnOcultarCampusMes" class="btn btn-outline-primary btn-sm me-2">Ocultar Campus Virtual</button>
+            <button id="btnSoloCampusMes" class="btn btn-outline-secondary btn-sm">Solo Campus Virtual</button>
+            <button id="btnMostrarTodosMes" class="btn btn-outline-success btn-sm ms-2">Mostrar Todos</button>
+        </div>
         <div class="calendar calendar-month">
             @php
                 $diasEnMes = cal_days_in_month(CAL_GREGORIAN, $mesSeleccionado, $anioActual);
@@ -150,7 +155,7 @@
                     <!-- Vista de reserva -->
                     @foreach ($reservasDia as $reserva)
                     <div class="calendar__task fw-bold {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if ($reserva->salon == 'Auditorio Jorge L. Quijada') text-white @endif" @if ($reserva->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
-                        data-reserva-id="{{ $reserva->id }}">
+                        data-reserva-id="{{ $reserva->id }}" data-salon="{{ $reserva->salon }}">
                         {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i') }} -
                         {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i') }}
                     </div>
@@ -158,6 +163,11 @@
                 </div>
         @endfor
         @elseif(request('vista') === 'semanal')
+                <div class="mb-3 text-center">
+                    <button id="btnOcultarCampusSem" class="btn btn-outline-primary btn-sm me-2">Ocultar Campus Virtual</button>
+                    <button id="btnSoloCampusSem" class="btn btn-outline-secondary btn-sm">Solo Campus Virtual</button>
+                    <button id="btnMostrarTodosSem" class="btn btn-outline-success btn-sm ms-2">Mostrar Todos</button>
+                </div>
                 @php
                     $weekInput = request('semana', now()->format('o-\\WW'));
                     // Si viene solo número, anteponer año y 'W'
@@ -178,7 +188,7 @@
                             $date = $day->format('Y-m-d');
                             $events = $reservasActivas->filter(fn($r)=> $r->fecha_inicio <= $date && $r->fecha_final >= $date);
                         @endphp
-                        <div class="col border p-2 text-white fw-bold">
+                        <div class="col border p-2 text-white fw-bold" >
                             @php setlocale(LC_TIME, 'es_ES.UTF-8'); @endphp
                             <h6 class="fw-bold">{{ $day->locale('es')->isoFormat('ddd DD/MM') }}</h6>
                             @if($events->isEmpty())
@@ -186,7 +196,7 @@
                             @else
                                 @foreach($events as $r)
                                     <div class="calendar__task small mb-1 p-1 text-white fw-bold {{ $coloresSalones[$r->salon] ?? 'bg-light' }} @if($r->salon==='Auditorio Jorge L. Quijada') text-white @endif"
-                                        data-reserva-id="{{ $r->id }}"
+                                        data-reserva-id="{{ $r->id }}" data-salon="{{ $r->salon }}"
                                         @if($r->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
                                         {{ \Carbon\Carbon::parse($r->hora_inicio)->format('g:i') }} - {{ \Carbon\Carbon::parse($r->hora_fin)->format('g:i') }}<br>{{ $r->actividad }}
                                     </div>
@@ -199,21 +209,49 @@
                 <!-- Vista Diaria -->
                 <div class="daily-view">
                     <h4 class="text-center text-white mb-4 fw-bold">
-                        Eventos del día {{ \Carbon\Carbon::parse($fechaDiaria)->format('d/m/Y') }}
+                        Eventos del dia {{ \Carbon\Carbon::parse($fechaDiaria)->format('d/m/Y') }}
                     </h4>
+                    <div class="mb-3 text-center">
+                        <button id="btnOcultarCampus" class="btn btn-outline-primary btn-sm me-2">Ocultar Campus Virtual</button>
+                        <button id="btnSoloCampus" class="btn btn-outline-secondary btn-sm">Solo Campus Virtual</button>
+                        <button id="btnMostrarTodos" class="btn btn-outline-success btn-sm ms-2">Mostrar Todos</button>
+                    </div>
                     @if($reservasDiaria->isEmpty())
                         <p class="text-white text-center fw-bold">No hay eventos para esta fecha.</p>
                     @else
-                        <div class="list-group">
+                        <div class="row g-3 justify-content-center">
                             @foreach($reservasDiaria as $reserva)
-                                <div class="calendar__task list-group-item list-group-item-action fw-bold text-white {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if($reserva->salon==='Auditorio Jorge L. Quijada') text-white @endif"
-                                    data-reserva-id="{{ $reserva->id }}"
-                                    @if($reserva->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
-                                    <div class="d-flex w-100 justify-content-between">
-                                        <strong>{{ $reserva->actividad }}</strong>
-                                        <small class="fw-bold text-white">{{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i A') }} - {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i A') }}</small>
+                                <div class="col-12 col-md-6 col-lg-4">
+                                    <div class="card shadow h-100 border-0" >
+                                        <div
+                                            class="card-header fw-bold text-white {{ $coloresSalones[$reserva->salon] ?? 'bg-light' }} @if($reserva->salon==='Auditorio Jorge L. Quijada') text-white @endif calendar__task calendar__task--diaria"
+                                            @if($reserva->salon==='Auditorio Jorge L. Quijada') style="background-color: purple;" @endif
+                                            data-reserva-id="{{ $reserva->id }}"
+                                            style="cursor:pointer"
+                                        >
+                                            {{ $reserva->salon }}
+                                        </div>
+                                        <div class="card-body">
+                                            <h5 class="card-title fw-bold mb-2">{{ $reserva->actividad }}</h5>
+                                            <p class="mb-1"><strong>Horario:</strong>
+                                                {{ \Carbon\Carbon::parse($reserva->hora_inicio)->format('g:i A') }} -
+                                                {{ \Carbon\Carbon::parse($reserva->hora_fin)->format('g:i A') }}
+                                            </p>
+                                            <p class="mb-1"><strong>Analista:</strong> {{ $reserva->analista }}</p>
+                                            <p class="mb-1"><strong>Estatus:</strong>
+                                                <span class="badge
+                                                    @if($reserva->estatus=='Programado') bg-primary
+                                                    @elseif($reserva->estatus=='Realizado') bg-success
+                                                    @elseif($reserva->estatus=='Cancelado') bg-danger
+                                                    @elseif($reserva->estatus=='Reprogramado') bg-warning text-dark
+                                                    @else bg-secondary
+                                                    @endif">
+                                                    {{ $reserva->estatus }}
+                                                </span>
+                                            </p>
+                                            <p class="mb-1"><strong>Facilitador:</strong> {{ $reserva->facilitador_moderador }}</p>
+                                        </div>
                                     </div>
-                                    <small class="fw-bold text-white">Salón: {{ $reserva->salon }}</small>
                                 </div>
                             @endforeach
                         </div>
@@ -270,37 +308,42 @@
             </thead>
             <tbody>
                 @foreach ($reservasCanceladas as $cancelada)
-                {{-- @dd($cancelada) --}}
-                <tr class="text-white">
-                    <td>{{ $cancelada->numero_evento }}</td>
-                    <td>{{ $cancelada->actividad }}</td>
-                    <td>{{ $cancelada->cancelado_por }}</td>
-                    <td>{{ \Carbon\Carbon::parse($cancelada->fecha_inicio)->format('d/m/Y') }} -
-                        {{ \Carbon\Carbon::parse($cancelada->fecha_final)->format('d/m/Y') }}
-                    </td>
-                    <td>{{ \Carbon\Carbon::parse($cancelada->hora_inicio)->format('g:i A') }} -
-                        {{ \Carbon\Carbon::parse($cancelada->hora_fin)->format('g:i A') }}
-                    </td>
-                    <td class="{{ [
-                            'Auditorio Jorge L. Quijada' => 'text-white',
-                            'Trabajo en Equipo' => 'bg-success text-white',
-                            'Comunicación Asertiva' => 'bg-info text-white',
-                            'Servicio al Cliente' => 'bg-warning text-center',
-                            'Integridad' => 'bg-danger text-white',
-                            'Creatividad Innovadora' => 'bg-primary text-center',
-                            'Externo' => 'bg-dark text-white'
-                            ][$cancelada->salon] ?? '' }}" @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
-                        {{ $cancelada->salon }}
-                    </td>
-                    <td>
-                        <form action="{{ route('reservaCal.restaurar', $cancelada->id) }}" method="POST" style="display:inline;">
-                            @csrf
-                            <button type="submit" class="btn btn-success btn-sm">
-                                <i class="fas fa-undo"></i> Restaurar
-                            </button>
-                        </form>
-                    </td>
-                </tr>
+                    {{-- @dd($cancelada) --}}
+                    <tr class="text-white">
+                        <td>{{ $cancelada->numero_evento }}</td>
+                        <td>{{ $cancelada->actividad }}</td>
+                        <td>{{ $cancelada->cancelado_por }}</td>
+                        <td>{{ \Carbon\Carbon::parse($cancelada->fecha_inicio)->format('d/m/Y') }} -
+                            {{ \Carbon\Carbon::parse($cancelada->fecha_final)->format('d/m/Y') }}
+                        </td>
+                        <td>{{ \Carbon\Carbon::parse($cancelada->hora_inicio)->format('g:i A') }} -
+                            {{ \Carbon\Carbon::parse($cancelada->hora_fin)->format('g:i A') }}
+                        </td>
+                        <td class="{{ [
+                                'Auditorio Jorge L. Quijada' => 'text-white',
+                                'Trabajo en Equipo' => 'bg-success text-white',
+                                'Comunicación Asertiva' => 'bg-info text-white',
+                                'Servicio al Cliente' => 'bg-warning text-center',
+                                'Integridad' => 'bg-danger text-white',
+                                'Creatividad Innovadora' => 'bg-primary text-center',
+                                'Externo' => 'bg-dark text-white'
+                                ][$cancelada->salon] ?? '' }}" @if($cancelada->salon == 'Auditorio Jorge L. Quijada') style="background-color: purple;" @endif>
+                            {{ $cancelada->salon }}
+                        </td>
+                        <td>
+                        @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('reservaCal.edit', $cancelada->id) }}" class="btn btn-primary btn-sm mb-1">
+                                <i class="fas fa-edit"></i> Editar
+                        </a>
+                            <form action="{{ route('reservaCal.restaurar', $cancelada->id) }}" method="POST" style="display:inline;">
+                                @csrf
+                                <button type="submit" class="btn btn-success btn-sm">
+                                    <i class="fas fa-undo"></i> Restaurar
+                                </button>
+                            </form>
+                        @endif
+                        </td>
+                    </tr>
                 @endforeach
             </tbody>
         </table>
@@ -323,14 +366,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <!-- <p><strong>Fecha:</strong> <span id="modalFecha"></span></p> -->
                             <p><strong>Horario:</strong> <span id="modalHorario"></span></p>
                             <p><strong>Actividad:</strong> <span id="modalActividad"></span></p>
                             <p><strong>Analista:</strong> <span id="modalAnalista"></span></p>
                             <p><strong>Creado por:</strong> <span id="modalUsuario"></span></p>
                         </div>
                         <div class="col-md-6">
-                            <p><strong>Depto.:</strong> <span id="modalDepto"></span></p>
+                            <p><strong>Fecha inicio:</strong> <span id="modalFechaInicio"></span></p>
+                            <p><strong>Fecha final:</strong> <span id="modalFechaFinal"></span></p>
                             <p><strong>Participantes:</strong> <span id="modalParticipantes"></span></p>
                             <p><strong>Facilitador:</strong> <span id="modalFacilitador"></span></p>
                             <p><strong>Estatus:</strong> <span id="modalEstatus"></span></p>
@@ -344,15 +387,17 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                    <a href="#" id="modalEditarBtn" class="btn btn-primary">
-                        <i class="fas fa-edit"></i> Editar
-                    </a>
-                    <form id="modalCancelForm" method="POST" class="d-inline ms-2">
-                        @csrf
-                        <button type="submit" id="modalCancelarBtn" class="btn btn-danger">
-                            <i class="fas fa-ban"></i> Cancelar
-                        </button>
-                    </form>
+                    @if(Auth::user()->role === 'admin')
+                        <a href="#" id="modalEditarBtn" class="btn btn-primary">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        <form id="modalCancelForm" method="POST" class="d-inline ms-2">
+                            @csrf
+                            <button type="submit" id="modalCancelarBtn" class="btn btn-danger" onclick="return confirm('¿Estás seguro de que deseas cancelar este evento?')">
+                                <i class="fas fa-ban"></i> Cancelar
+                            </button>
+                        </form>
+                    @endif
                 </div>
 
             </div>
@@ -364,48 +409,41 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const reservas = @json($reservaCals);
+            const reservas = Object.values(@json($reservaCals));
             const currentUser = @json(Auth::user()->name);
             const coloresSalones = @json($coloresSalones);
             const modal = new bootstrap.Modal(document.getElementById('detalleReservaModal'));
 
+
             function mostrarDetallesReserva(reservaId) {
+				const reserva = reservas.find(r => r.id === reservaId);
+				if (!reserva) return;
 
-                const reserva = reservas.find(r => r.id === reservaId);
-                if (!reserva) return;
+				document.getElementById('modalSalon').textContent = reserva.salon;
+				document.getElementById('modalColorSalon').className = coloresSalones[reserva.salon] || 'bg-light';
+				document.getElementById('modalHorario').textContent =
+					`${moment(reserva.hora_inicio, 'HH:mm:ss').format('h:mm')} - ${moment(reserva.hora_fin, 'HH:mm:ss').format('h:mm')}`;
+                document.getElementById('modalFechaInicio').textContent = moment(reserva.fecha_inicio).format('DD/MM/YYYY');
+                document.getElementById('modalFechaFinal').textContent = moment(reserva.fecha_final).format('DD/MM/YYYY');
+				document.getElementById('modalActividad').textContent = reserva.actividad;
+				document.getElementById('modalAnalista').textContent = reserva.analista;
+                document.getElementById('modalUsuario').textContent = reserva.creado_por || 'N/A';
+				
+				document.getElementById('modalParticipantes').textContent = reserva.cant_participantes;
+				document.getElementById('modalFacilitador').textContent = reserva.facilitador_moderador;
+				document.getElementById('modalEstatus').textContent = reserva.estatus;
+				document.getElementById('modalInsumos').textContent = reserva.insumos || 'No especificado';
+				document.getElementById('modalRequisitos').textContent = reserva.requisitos_tecnicos || 'No especificado';
 
-                // Formatear la fecha
-                const fecha = new Date(reserva.fecha).toLocaleDateString('es-ES', {
-                    weekday: 'long'
-                    , year: 'numeric'
-                    , month: 'long'
-                    , day: 'numeric'
-                });
+				// Solo para admin existen estos elementos
+				const editarBtn = document.getElementById('modalEditarBtn');
+				if (editarBtn) editarBtn.href = `/reservaCal/${reserva.id}/edit`;
 
-                // Actualizar el contenido del modal
-                document.getElementById('modalSalon').textContent = reserva.salon;
-                document.getElementById('modalColorSalon').className = coloresSalones[reserva.salon] || 'bg-light';
-                // document.getElementById('modalFecha').textContent = fecha;
-                document.getElementById('modalHorario').textContent =
-                    `${moment(reserva.hora_inicio, 'HH:mm:ss').format('h:mm')} - ${moment(reserva.hora_fin, 'HH:mm:ss').format('h:mm')}`;
-                document.getElementById('modalActividad').textContent = reserva.actividad;
-                document.getElementById('modalAnalista').textContent = reserva.analista;
-                document.getElementById('modalUsuario').textContent = currentUser;
-                document.getElementById('modalDepto').textContent = reserva.depto_responsable;
-                document.getElementById('modalParticipantes').textContent = reserva.cant_participantes;
-                document.getElementById('modalFacilitador').textContent = reserva.facilitador_moderador;
-                document.getElementById('modalEstatus').textContent = reserva.estatus;
-                document.getElementById('modalInsumos').textContent = reserva.insumos || 'No especificado';
-                document.getElementById('modalRequisitos').textContent = reserva.requisitos_tecnicos ||
-                    'No especificado';
-                    document.getElementById('modalMontaje').textContent = reserva.montaje ||
-                    'No especificado';
-                document.getElementById('modalEditarBtn').href = `/reservaCal/${reserva.id}/edit`;
-                const cancelForm = document.getElementById('modalCancelForm');
-                cancelForm.action = `/reservaCal/${reserva.id}/cancel`;
+				const cancelForm = document.getElementById('modalCancelForm');
+				if (cancelForm) cancelForm.action = `/reservaCal/${reserva.id}/cancel`;
 
-                modal.show();
-            }
+				modal.show();
+			}
 
             // Agregar click listeners a todas las reservas
             document.querySelectorAll('.calendar__task, .week-grid__event').forEach(elemento => {
@@ -415,6 +453,105 @@
                     mostrarDetallesReserva(parseInt(reservaId));
                 });
             });
+
+            // Filtro para la vista diaria
+            if (document.getElementById('btnOcultarCampus')) {
+                const btnOcultar = document.getElementById('btnOcultarCampus');
+                const btnSolo = document.getElementById('btnSoloCampus');
+                const btnTodos = document.getElementById('btnMostrarTodos');
+
+                btnOcultar.addEventListener('click', function() {
+                    document.querySelectorAll('.daily-view .card-header').forEach(card => {
+                        if (card.textContent.trim() === 'Campus Virtual') {
+                            card.closest('.col-12').style.display = 'none';
+                        } else {
+                            card.closest('.col-12').style.display = '';
+                        }
+                    });
+                });
+
+                btnSolo.addEventListener('click', function() {
+                    document.querySelectorAll('.daily-view .card-header').forEach(card => {
+                        if (card.textContent.trim() === 'Campus Virtual') {
+                            card.closest('.col-12').style.display = '';
+                        } else {
+                            card.closest('.col-12').style.display = 'none';
+                        }
+                    });
+                });
+
+                btnTodos.addEventListener('click', function() {
+                    document.querySelectorAll('.daily-view .col-12').forEach(card => {
+                        card.style.display = '';
+                    });
+                });
+            }
+
+            // Filtro para la vista mensual
+            if (document.getElementById('btnOcultarCampusMes')) {
+                const btnOcultarMes = document.getElementById('btnOcultarCampusMes');
+                const btnSoloMes = document.getElementById('btnSoloCampusMes');
+                const btnTodosMes = document.getElementById('btnMostrarTodosMes');
+
+                btnOcultarMes.addEventListener('click', function() {
+                    document.querySelectorAll('.calendar-month .calendar__task').forEach(task => {
+                        if (task.getAttribute('data-salon') === 'Campus Virtual') {
+                            task.style.display = 'none';
+                        } else {
+                            task.style.display = '';
+                        }
+                    });
+                });
+
+                btnSoloMes.addEventListener('click', function() {
+                    document.querySelectorAll('.calendar-month .calendar__task').forEach(task => {
+                        if (task.getAttribute('data-salon') === 'Campus Virtual') {
+                            task.style.display = '';
+                        } else {
+                            task.style.display = 'none';
+                        }
+                    });
+                });
+
+                btnTodosMes.addEventListener('click', function() {
+                    document.querySelectorAll('.calendar-month .calendar__task').forEach(task => {
+                        task.style.display = '';
+                    });
+                });
+            }
+
+            // Filtro para la vista semanal
+            if (document.getElementById('btnOcultarCampusSem') && document.querySelector('.weekly-view')) {
+                const btnOcultarSem = document.getElementById('btnOcultarCampusSem');
+                const btnSoloSem = document.getElementById('btnSoloCampusSem');
+                const btnTodosSem = document.getElementById('btnMostrarTodosSem');
+
+                btnOcultarSem.addEventListener('click', function() {
+                    document.querySelectorAll('.weekly-view .calendar__task').forEach(task => {
+                        if (task.getAttribute('data-salon') === 'Campus Virtual') {
+                            task.style.display = 'none';
+                        } else {
+                            task.style.display = '';
+                        }
+                    });
+                });
+
+                btnSoloSem.addEventListener('click', function() {
+                    document.querySelectorAll('.weekly-view .calendar__task').forEach(task => {
+                        if (task.getAttribute('data-salon') === 'Campus Virtual') {
+                            task.style.display = '';
+                        } else {
+                            task.style.display = 'none';
+                        }
+                    });
+                });
+
+                btnTodosSem.addEventListener('click', function() {
+                    document.querySelectorAll('.weekly-view .calendar__task').forEach(task => {
+                        task.style.display = '';
+                    });
+                });
+            }
         });
 
     </script>

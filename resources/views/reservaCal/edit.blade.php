@@ -141,7 +141,7 @@
                                             <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
                                             <input type="number" name="numero_evento" class="form-control"
                                                 value="{{ old('numero_evento', $reservaCal->numero_evento) }}"
-                                                required>
+                                                >
                                         </div>
                                     </div>
 
@@ -396,6 +396,7 @@
                                             <span class="input-group-text"><i class="fas fa-tools"></i></span>
                                             <select class="form-select" name="analista">
                                                 <option value="" disabled selected>Seleccion</option>
+												<option value="Por Asignar" {{ old('analista', $reservaCal->analista ?? '') == 'Por Asignar' ? 'selected' : '' }}>Por Asignar</option>
                                                 <option value="Anabel Santana" {{ old('analista', $reservaCal->analista) == 'Anabel Santana' ? 'selected' : '' }}>Anabel Santana</option>
                                                 <option value="Eva Ortega" {{ old('analista', $reservaCal->analista) == 'Eva Ortega' ? 'selected' : '' }}>Eva Ortega</option>
                                                 <option value="Helvetia Bernal" {{ old('analista', $reservaCal->analista) == 'Helvetia Bernal' ? 'selected' : '' }}>Helvetia Bernal</option>

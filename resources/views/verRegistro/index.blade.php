@@ -14,24 +14,16 @@
     @include('plantilla.nabvar')
     <div class="container-fluid px-4">
         <h1 class="text-center my-4">Información General</h1>
-        <form method="GET" class="mb-3 text-center">
+        <form method="GET" class="mb-3 text-center" id="filtroForm">
             <label for="semana" class="form-label fw-bold">Ver solo eventos de la semana:</label>
             <input type="week" id="semana" name="semana" value="{{ $semana }}" class="form-control d-inline-block w-auto" onchange="this.form.submit()">
+            <input type="hidden" name="search" id="searchInput" value="{{ request('search', '') }}">
             <button type="submit" class="btn btn-primary ms-2">Filtrar</button>
             @if(request()->has('semana'))
                 <a href="{{ route('verRegistro.index') }}" class="btn btn-secondary ms-2">Ver todos</a>
             @endif
         </form>
-        @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        @endif
-        <!-- <a href="{{ route('reservas.export') }}" class="btn btn-success mb-3">
-            <i class="fas fa-file-excel"></i> Exportar a Excel
-        </a> -->
-        <a href="{{ route('servicios.pdf', ['semana' => $semana]) }}" class="btn btn-danger mb-3" target="_blank">
+        <a href="#" id="exportPdfBtn" class="btn btn-danger mb-3" target="_blank">
             <i class="fas fa-file-pdf"></i> Exportar Servicios Administrativos a PDF
         </a>
         <div class="card mb-4">
@@ -69,6 +61,7 @@
                                 <th scope="col" data-column="receso_am">Receso AM</th>
                                 <th scope="col" data-column="receso_pm">Receso PM</th>
                                 <th scope="col" data-column="analista">Analista</th>
+								<th scope="col" data-column="facilitador_moderador">Facilitador</th>
                                 <th scope="col" data-column="estatus">Estatus</th>
                                 <th scope="col" data-column="cant_participantes">Participantes</th>
                                 <th scope="col" data-column="actividad">Actividad</th>
@@ -127,6 +120,7 @@
                                     @endif
                                 </td>
                                 <td data-column="analista">{{ $reserva->analista }}</td>
+								<td data-column="facilitador_moderador">{{ $reserva->facilitador_moderador }}</td>
                                 <td data-column="estatus">
                                     @php
                                     $estatusClass = [
@@ -169,13 +163,15 @@
                                     <a href="{{ route('reservaCal.edit', $reserva->id) }}" class="btn btn-sm btn-warning">
                                         <i class="fas fa-edit"></i> Editar
                                     </a>
-                                    <form action="{{ route('reservaCal.destroy', $reserva->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-danger">
-                                            <i class="fas fa-trash"></i> Eliminar
-                                        </button>
-                                    </form>
+                                        @if (Auth::user()->name === 'aldehir') 
+                                            <form action="{{ route('reservaCal.destroy', $reserva->id) }}" method="POST" class="d-inline" onsubmit="return confirm('¿Estás seguro de que deseas eliminar este registro?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fas fa-trash"></i> Eliminar
+                                                </button>
+                                            </form>
+                                        @endif
                                     @endif
                                 </td>
                             </tr>
@@ -208,30 +204,69 @@
                 ]
             });
 
+             // Al hacer clic en exportar PDF, toma el valor del buscador y redirige con los parámetros
+            $('#exportPdfBtn').on('click', function(e) {
+                e.preventDefault();
+                let semana = $('#semana').val();
+                let search = $('.dataTables_filter input').val();
+                let url = "{{ route('servicios.pdf') }}?semana=" + encodeURIComponent(semana) + "&search=" + encodeURIComponent(search);
+                window.open(url, '_blank');
+            });
+
 
             // Selector de vista para mostrar/ocultar columnas
             document.getElementById("viewSelector").addEventListener("change", function() {
                 let selectedView = this.value;
                 let allColumns = document.querySelectorAll("[data-column]");
 
+                // Mostrar todas las filas SIEMPRE antes de aplicar el filtro
+                document.querySelectorAll("#registrosTable tbody tr").forEach(row => {
+                    row.style.display = "";
+                });
+
                 allColumns.forEach(col => col.style.display = "none"); // Ocultar todo por defecto
 
                 if (selectedView === "general") {
                     allColumns.forEach(col => col.style.display = "table-cell"); // Mostrar todo
+                    // Mostrar todas las filas (ya hecho arriba)
                 } else if (selectedView === "soporte") {
                     let soporteColumns = ["salon", "fecha_inicio", "fecha_final", "actividad", "duracion", "analista", "estatus", "requisitos_tecnicos", "asistencia"];
                     soporteColumns.forEach(col => {
                         document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
                     });
+
+                    // Ocultar filas con salón "Campus Virtual"
+                    document.querySelectorAll("#registrosTable tbody tr").forEach(row => {
+                        let salonCell = row.querySelector('[data-column="salon"]');
+                        if (salonCell) {
+                            let salon = salonCell.textContent.trim();
+                            if (salon === "Campus Virtual") {
+                                row.style.display = "none";
+                            }
+                        }
+                    });
+
+                } else if (selectedView === "virtual") {
+                    let soporteColumns = ["fecha_inicio", "fecha_final", "actividad", "numero_evento", "scafid", "duracion", "analista", "estatus"];
+                    soporteColumns.forEach(col => {
+                        document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
+                    });
+                    // Mostrar todas las filas (ya hecho arriba)
                 } else if (selectedView === "insumos") {
                     let insumosColumns = ["salon", "fecha_inicio", "fecha_final", "actividad", "duracion", "estatus", "receso_am", "receso_pm", "cant_participantes", "analista", "insumos", "montaje"];
                     insumosColumns.forEach(col => {
                         document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
                     });
-                } else if (selectedView === "virtual") {
-                    let soporteColumns = ["fecha_inicio", "fecha_final", "actividad", "numero_evento", "scafid", "duracion", "analista", "estatus"];
-                    soporteColumns.forEach(col => {
-                        document.querySelectorAll(`[data-column="${col}"]`).forEach(el => el.style.display = "table-cell");
+
+                    // Ocultar filas con salón "Campus Virtual" o "Externo"
+                    document.querySelectorAll("#registrosTable tbody tr").forEach(row => {
+                        let salonCell = row.querySelector('[data-column="salon"]');
+                        if (salonCell) {
+                            let salon = salonCell.textContent.trim();
+                            if (salon === "Campus Virtual") {
+                                row.style.display = "none";
+                            }
+                        }
                     });
                 }
             });

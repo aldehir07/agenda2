@@ -26,6 +26,12 @@ body {
     background-color: white;
 }
 
+/* Ajusta el tamaño y padding solo para la vista diaria */
+.card-header.calendar__task--diaria {
+    font-size: 1.2rem !important;
+    padding: 0.75rem 1rem !important;
+}
+
 .calendar__day--disabled {
     background-color: #f8f9fa;
 }

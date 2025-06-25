@@ -47,6 +47,7 @@ class RegistroReservaController extends Controller
     public function exportServiciosPDF(Request $request)
     {
         $semana = $request->input('semana', now()->format('o-\WW'));
+        $search = $request->input('search', '');
 
         if (str_contains($semana, '-W')) {
             [$anioSemana, $numSemana] = explode('-W', $semana);
@@ -57,12 +58,32 @@ class RegistroReservaController extends Controller
         $fechaInicio = \Carbon\Carbon::now()->setISODate((int)$anioSemana, (int)$numSemana)->startOfWeek();
         $fechaFin = $fechaInicio->copy()->endOfWeek();
 
-        // Filtrar solo los eventos de la semana
-        $reservas = ReservaCal::orderBy('fecha_inicio', 'asc')->get()->filter(function ($reserva) use ($fechaInicio, $fechaFin) {
-            return \Carbon\Carbon::parse($reserva->fecha_inicio)->between($fechaInicio, $fechaFin) ||
-                \Carbon\Carbon::parse($reserva->fecha_final)->between($fechaInicio, $fechaFin) ||
-                ($reserva->fecha_inicio <= $fechaInicio && $reserva->fecha_final >= $fechaFin);
-        });
+        // Filtrar solo los eventos de la semana y que NO sean cancelados
+        $reservas = ReservaCal::orderBy('fecha_inicio', 'asc')
+            ->where('estatus', '!=', 'Cancelado')
+            ->where('salon', '!=', 'Campus Virtual')
+            ->where(function($query) use ($fechaInicio, $fechaFin) {
+                $query->whereBetween('fecha_inicio', [$fechaInicio, $fechaFin])
+                    ->orWhereBetween('fecha_final', [$fechaInicio, $fechaFin])
+                    ->orWhere(function($q) use ($fechaInicio, $fechaFin) {
+                        $q->where('fecha_inicio', '<=', $fechaInicio)
+                        ->where('fecha_final', '>=', $fechaFin);
+                    });
+            });
+
+        // Si hay búsqueda, filtrar por los campos relevantes
+        if ($search) {
+            $reservas = $reservas->where(function($q) use ($search) {
+                $q->where('salon', 'like', "%$search%")
+                ->orWhere('actividad', 'like', "%$search%")
+                ->orWhere('analista', 'like', "%$search%")
+                ->orWhere('estatus', 'like', "%$search%")
+                ->orWhere('insumos', 'like', "%$search%")
+                ->orWhere('montaje', 'like', "%$search%");
+            });
+        }
+
+        $reservas = $reservas->get();
 
         $pdf = app('dompdf.wrapper')
             ->loadView('verRegistro.servicios_pdf', compact('reservas'))

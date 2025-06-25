@@ -112,7 +112,7 @@
                                         <label class="form-label">Numero Evento</label>
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="fas fa-hashtag"></i></span>
-                                            <input type="number" name="numero_evento" class="form-control" value="{{ old('numero_evento') }}" required>
+                                            <input type="number" name="numero_evento" class="form-control" value="{{ old('numero_evento', $reservaCal->numero_evento ?? '') }}" >
                                         </div>
                                     </div>
 
@@ -153,7 +153,7 @@
                                         <label for="fecha_inicio" class="form-label">Fecha de inicio</label>
                                         <input type="date" name="fecha_inicio" id="fecha_inicio"
                                             class="form-control" value="{{ request('fecha') }}"
-                                            required readonly>
+                                            required>
                                     </div>
 
                                     <div class="mb-3">
@@ -322,6 +322,7 @@
                                             <span class="input-group-text"><i class="fas fa-user-tie"></i></span>
                                             <select class="form-select" name="analista">
                                                 <option value="" disabled selected>Seleccion</option>
+												<option value="Por Asignar" {{ old('analista', $reservaCal->analista ?? '') == 'Por Asignar' ? 'selected' : '' }}>Por Asignar</option>
                                                 <option value="Anabel Santana">Anabel Santana</option>
                                                 <option value="Eva Ortega">Eva Ortega</option>
                                                 <option value="Helvetia Bernal">Helvetia Bernal</option>

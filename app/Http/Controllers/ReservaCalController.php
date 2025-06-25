@@ -109,7 +109,7 @@ class ReservaCalController extends Controller
                                 "Externo",
                                 "Campus Virtual"',
             'depto_responsable' => 'required',
-            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento',
+            'numero_evento' => 'nullable|numeric|unique:reserva_cals,numero_evento',
             'scafid' => 'nullable|string',
             'mes' => 'required|string',
             'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
@@ -204,7 +204,8 @@ class ReservaCalController extends Controller
             'insumos' => $request->insumos,
             'requisitos_tecnicos' => $request->requisitos_tecnicos,
             'montaje' => $request->montaje,
-            'asistencia_tecnica' => $request->asistencia_tecnica
+            'asistencia_tecnica' => $request->asistencia_tecnica,
+            'creado_por' => Auth::user()->name
         ]);
 
         RegistroReserva::create($request->all());
@@ -246,7 +247,7 @@ class ReservaCalController extends Controller
                                 "Externo",
                                 "Campus Virtual"',
             'depto_responsable' => 'required',
-            'numero_evento' => 'required|numeric|unique:reserva_cals,numero_evento,' . $reservaCal->id,
+            'numero_evento' => 'nullable|unique:reserva_cals,numero_evento,' . ($reservaCal->id ?? 'NULL') . ',id',
             'scafid' => 'nullable|string',
             'mes' => 'required|string',
             'tipo_actividad' => 'required|in:Reunion,Capacitacion,REPLICA',
@@ -299,6 +300,32 @@ class ReservaCalController extends Controller
         // Actualiza la reservación
         $reservaCal->update($request->all());
 
+        if ($request->salon !== 'Campus Virtual') {
+            $horaInicio = Carbon::parse($request->hora_inicio);
+            $horaFin = Carbon::parse($request->hora_fin);
+
+            $existeReserva = ReservaCal::where('salon', $request->salon)
+                ->where('estatus', '!=', 'Cancelado')
+                ->where('id', '!=', $reservaCal->id)
+                ->where(function ($query) use ($request) {
+                    $query->where('fecha_inicio', '<=', $request->fecha_final)
+                        ->where('fecha_final', '>=', $request->fecha_inicio);
+                })
+                ->where(function ($query) use ($horaInicio, $horaFin) {
+                    $query->where(function ($q) use ($horaInicio, $horaFin) {
+                        $q->whereRaw('ADDTIME(hora_fin, "01:00:00") > ?', [$horaInicio->format('H:i:s')])
+                            ->where('hora_inicio', '<', $horaFin->format('H:i:s'));
+                    });
+                })
+                ->exists();
+
+            if ($existeReserva) {
+                return redirect()->back()->withErrors(['error' => 'Ya existe una reserva en el mismo salón y horario (debe dejar al menos 1 hora de espera entre eventos).']);
+            }
+        }
+
+        $reservaCal->update($request->all());
+
         return redirect()->route('verRegistro.index')->with('success', 'Reserva actualizada exitosamente.');
     }
 
@@ -319,24 +346,29 @@ class ReservaCalController extends Controller
     {
 
         // Solo validar cruce de fechas/horas si NO es Campus Virtual
+
         if ($reservaCal->salon !== 'Campus Virtual') {
+            $horaInicio = Carbon::parse($reservaCal->hora_inicio);
+            $horaFin = Carbon::parse($reservaCal->hora_fin);
+
             $existeReserva = ReservaCal::where('salon', $reservaCal->salon)
                 ->where('estatus', '!=', 'Cancelado')
-                ->where('id', '!=', $reservaCal->id) // Ignorar el evento que se va a restaurar
+                ->where('id', '!=', $reservaCal->id)
                 ->where(function ($query) use ($reservaCal) {
-                    $query->whereBetween('fecha_inicio', [$reservaCal->fecha_inicio, $reservaCal->fecha_final])
-                        ->orWhereBetween('fecha_final', [$reservaCal->fecha_inicio, $reservaCal->fecha_final]);
+                    $query->where('fecha_inicio', '<=', $reservaCal->fecha_final)
+                        ->where('fecha_final', '>=', $reservaCal->fecha_inicio);
                 })
-                ->where(function ($query) use ($reservaCal) {
-                    $query->where(function ($q) use ($reservaCal) {
-                        $q->where('hora_inicio', '<', $reservaCal->hora_fin)
-                            ->where('hora_fin', '>', $reservaCal->hora_inicio);
+                ->where(function ($query) use ($horaInicio, $horaFin) {
+                    // Agrega 1 hora al final del evento existente
+                    $query->where(function ($q) use ($horaInicio, $horaFin) {
+                        $q->whereRaw('ADDTIME(hora_fin, "01:00:00") > ?', [$horaInicio->format('H:i:s')])
+                            ->where('hora_inicio', '<', $horaFin->format('H:i:s'));
                     });
                 })
                 ->exists();
 
             if ($existeReserva) {
-                return redirect()->route('calendario')->with('error', 'No se puede restaurar: ya existe una reserva en el mismo salón y horario.');
+                return redirect()->route('calendario')->with('error', 'No se puede reservar: debe dejar al menos 1 hora de espera entre eventos en el mismo salón.');
             }
         }
 
